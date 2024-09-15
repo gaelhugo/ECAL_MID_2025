@@ -12,58 +12,58 @@ Nous aborderons des concepts clés tels que les variables, les boucles, les fonc
 
 ## Pourquoi utiliser le Creative Coding ?
 
-- Expérimentation artistique: Créer des animations, des jeux vidéo, de la musique générative, de l'art interactif, des visualisations de données, etc.
-- Prototypage rapide: Tester rapidement de nouvelles idées et itérer rapidement.
-- Personnalisation: Créer des outils et des interfaces adaptés à ses besoins spécifiques.
-- Compréhension du monde numérique: Développer une pensée computationnelle et mieux comprendre comment les technologies fonctionnent.
+- **Expérimentation artistique**: Créer des animations, des jeux vidéo, de la musique générative, de l'art interactif, des visualisations de données, etc.
+- **Prototypage rapide**: Tester rapidement de nouvelles idées et itérer rapidement.
+- **Personnalisation**: Créer des outils et des interfaces adaptés à ses besoins spécifiques.
+- **Compréhension du monde numérique**: Développer une pensée computationnelle et mieux comprendre comment les technologies fonctionnent.
 
 ## Exemples concrets
 
 - Arts visuels:
 
-  - Générative art: Création d'œuvres d'art uniques et évolutives.
-  - Animations: Réalisation de vidéos animées complexes.
-  - Interfaces interactives: Développement d'installations artistiques interactives.
+  - **Generative art**: Création d'œuvres d'art uniques et évolutives.
+  - **Animations**: Réalisation de vidéos animées complexes.
+  - **Interfaces interactives**: Développement d'installations artistiques interactives.
 
 - Design:
 
-  - UI/UX design: Création d'interfaces utilisateur personnalisées.
-  - Motion design: Réalisation d'animations pour le web et la vidéo.
+  - **UI/UX design**: Création d'interfaces utilisateur personnalisées.
+  - **Motion design**: Réalisation d'animations pour le web et la vidéo.
 
 - Musique:
 
-  - Musique générative: Composition de musique algorithmique.
-  - Visualisations musicales: Création de représentations visuelles de la musique.
+  - **Musique générative**: Composition de musique algorithmique.
+  - **Visualisations musicales**: Création de représentations visuelles de la musique.
 
 - Jeux vidéo:
 
-  - Développement de jeux indépendants: Création de jeux simples
+  - **Développement de jeux**: Création de jeux simples
 
 - Vie quotidienne:
 
-  - Automatisation de tâches: Création de scripts pour automatiser des tâches répétitives (par exemple, renommer des fichiers en masse).
-  - Personnalisation d'environnements numériques: Création de thèmes personnalisés pour les ordinateurs ou les smartphones.
+  - **Automatisation de tâches**: Création de scripts pour automatiser des tâches répétitives (par exemple, renommer des fichiers en masse).
+  - **Personnalisation d'environnements numériques**: Création de thèmes personnalisés pour les ordinateurs ou les smartphones.
 
 ## Compétences
 
-- Bases de la programmation: Variables, structures de contrôle, fonctions.
-- Logique algorithmique: Résoudre des problèmes de manière structurée.
-- Pensée créative: Imaginer de nouvelles idées et les concrétiser.
-- Curiosité: Explorer de nouveaux outils et techniques.
-- Persistance: La programmation nécessite de la patience et de la persévérance.
+- **Bases de la programmation**: Variables, structures de contrôle, fonctions.
+- **Logique algorithmique**: Résoudre des problèmes de manière structurée.
+- **Pensée créative**: Imaginer de nouvelles idées et les concrétiser.
+- **Curiosité**: Explorer de nouveaux outils et techniques.
+- **Persistance**: La programmation nécessite de la patience et de la persévérance.
 
 ## Vanilla JavaScript vs. p5.js
 
 p5.js est une bibliothèque JavaScript conçue spécifiquement pour faciliter la création de projets créatifs. Elle offre de nombreuses fonctions pré-construites pour le dessin, l'animation, l'interaction, etc., ce qui la rend très accessible aux débutants. Mais pourquoi choisir Vanilla JavaScript (JavaScript "pur") pour cette introduction au creative coding plutôt que p5.js ?
 
-Les avantages de Vanilla JavaScript
+**Les avantages de Vanilla JavaScript**
 
 - Compréhension fondamentale:
 
   - En utilisant Vanilla JavaScript, vous comprenez directement comment les éléments du DOM (Document Object Model) interagissent et comment le JavaScript manipule le HTML et le CSS. Cela vous donne une base solide pour comprendre d'autres frameworks et bibliothèques.
   - Vous apprenez les concepts fondamentaux de la programmation comme les variables, les fonctions, les boucles et les objets, sans être "masqués" par une couche supplémentaire.
 
-- Flexibilité totale:
+- Flexibilité:
 
   - Vous avez un contrôle total sur votre code. Vous pouvez personnaliser chaque aspect de votre projet sans être limité par les fonctions pré-définies d'une bibliothèque.
   - Vous pouvez choisir d'utiliser d'autres bibliothèques ou frameworks en plus de Vanilla JavaScript pour étendre les fonctionnalités de votre projet.
@@ -72,7 +72,7 @@ Les avantages de Vanilla JavaScript
 
   - En évitant les surcharges liées aux bibliothèques, vous pouvez obtenir des performances optimales, surtout pour les projets plus complexes.
 
-Quand choisir Vanilla JavaScript ?
+**Quand choisir Vanilla JavaScript ?**
 
 - Pour comprendre la transversalité des concepts de programmations pour d’autres langages ou autres librairies qui n’auront pas les mêmes “simplifications”
 - Si vous voulez construire une base solide pour apprendre d'autres frameworks.
