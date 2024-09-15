@@ -73,6 +73,69 @@ animate();
 - Organisation du code: Créez une hiérarchie de classes qui reflète les relations entre les objets de votre application.
 - Polymorphisme: Permet à des objets de types différents de répondre différemment à un même message, en fonction de leur classe.
 
+  ```apache
+  class Shape {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    draw(ctx) {
+      // Méthode à redéfinir dans les classes filles
+    }
+  }
+  ```
+
+  ```apache
+  class Ball extends Shape {
+    constructor(x, y, radius, color) {
+      super(x, y); // Appel du constructeur de la classe parente
+      this.radius = radius;
+      this.color = color;
+    }
+
+    draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();  
+
+      ctx.closePath();
+    }
+  }
+  ```
+
+```apache
+class Rectangle extends Shape {
+  constructor(x, y, width, height) {
+    super(x, y);
+    this.width = width;
+    this.height = height;
+  }
+
+  draw(ctx) {
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+}
+```
+
+```apache
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+
+const ball = new Ball(100, 100, 20, 'red');
+const rect = new Rectangle(200, 200, 50, 30);
+
+function animate() {
+  requestAnimationFrame(animate);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ball.draw(ctx);
+  rect.draw(ctx);
+}
+
+animate();
+```
+
 ## Application aux projets créatifs
 
 - Création d'objets interactifs (interfaces, boutons, sliders, etc.)
