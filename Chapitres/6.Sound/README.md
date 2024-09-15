@@ -59,6 +59,8 @@ La création de visualisations musicales en temps réel repose sur l'analyse des
 - **Particules**: Des particules sont émises et animées en fonction de la fréquence et de l'amplitude du signal.
 - **Formes géométriques**: Des formes géométriques simples ou complexes peuvent être déformées ou colorées en fonction de la musique.
 
+  ![](assets/20240915_181752_1_bmAT4Anl8261Ko3H5SA2kQ.gif)
+
 ## Bibliothèque JS
 
 - **Tone.js**: C'est l'une des bibliothèques les plus complètes et les plus utilisées pour la synthèse sonore, le traitement du signal et la création d'instruments virtuels. Elle offre une API intuitive et une grande flexibilité. ([link](****))
