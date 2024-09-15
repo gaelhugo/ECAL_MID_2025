@@ -87,37 +87,13 @@ p5.js est une bibliothèque JavaScript conçue spécifiquement pour faciliter la
 
 ## Lectures
 
-1. [Design by Numbers](https://mitpress.mit.edu/9780262632447/design-by-numbers/)
-
-By John Maeda
-
-2. [The laws of Simplicity](https://www.amazon.com/Laws-Simplicity-Design-Technology-Business/dp/0262134721)
-
-by John Maeda
-
-3. [Maeda & Media](https://www.recyclivre.com/products/545818-maeda-media-journal-d-un-explorateur-du-numerique)
-
-by John Maeda
-
-4. [The nature of code](https://natureofcode.com/)
-
-Simulating natural systems with JS
-
-by Daniel Shiffman
-
-5. [Generative Design ](https://www.amazon.com/Generative-Design-Visualize-Program-Processing/dp/1616890770)([v2](https://www.amazon.com/Generative-Design-Visualize-Program-JavaScript/dp/1616897589))
-
-by Hartmut Bohnacker, Benedikt Gross, Julia Laub & Claudius Lazzzeroni
-
-6. [A touch of Code](https://www.amazon.com/Touch-Code-Interactive-Installations-Experiences/dp/3899553314)
-
-Interactive installations and experiences
-
-curated by Art+Com
-
-7. [Art et ordinateurs](https://www.amazon.fr/Art-ordinateur-Abraham-Moles/dp/290778403X)
-
-by Abraham Moles
+1. [Design by Numbers](https://mitpress.mit.edu/9780262632447/design-by-numbers/), By John Maeda
+2. [The laws of Simplicity](https://www.amazon.com/Laws-Simplicity-Design-Technology-Business/dp/0262134721), by John Maeda
+3. [Maeda & Media](https://www.recyclivre.com/products/545818-maeda-media-journal-d-un-explorateur-du-numerique), by John Maeda
+4. [The nature of code](https://natureofcode.com/), Simulating natural systems with JS, by Daniel Shiffman
+5. [Generative Design ](https://www.amazon.com/Generative-Design-Visualize-Program-Processing/dp/1616890770)([v2](https://www.amazon.com/Generative-Design-Visualize-Program-JavaScript/dp/1616897589)), by Hartmut Bohnacker, Benedikt Gross, Julia Laub & Claudius Lazzzeroni
+6. [A touch of Code](https://www.amazon.com/Touch-Code-Interactive-Installations-Experiences/dp/3899553314), Interactive installations and experiences, curated by Art+Com
+7. [Art et ordinateurs](https://www.amazon.fr/Art-ordinateur-Abraham-Moles/dp/290778403X), by Abraham Moles
 
 ## Chapitres
 
