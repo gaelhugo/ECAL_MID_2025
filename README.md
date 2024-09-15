@@ -85,6 +85,12 @@ p5.js est une bibliothèque JavaScript conçue spécifiquement pour faciliter la
 
 - [lien](https://tree.ecal-mid.ch/)
 
+## Template
+
+```
+npm create vite@latest
+```
+
 ## Lectures
 
 1. [Design by Numbers](https://mitpress.mit.edu/9780262632447/design-by-numbers/), By John Maeda
