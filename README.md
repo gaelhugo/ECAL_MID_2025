@@ -4,9 +4,9 @@ Syllabus pour le premier semestre : CREATIVE CODING I
 
 # DRAWING WITH CODE & CODE IS LETTER AND NUMBERS
 
-En prenant la lettre et le chiffre comme prétexte d’unité visuelle, nous allons explorer les fondamentaux de la programmation visuelle. Nous apprendrons à décomposer les éléments graphiques en leurs composantes de base (points, lignes, formes) et à les recomposer de manière créative suivant les thématiques abordées en cours. (animation, interaction)
-Grâce à des exercices pratiques, nous découvrirons comment utiliser le code pour créer des animations, des interactions et des effets visuels.
-Nous aborderons des concepts clés tels que les variables, les boucles, les fonctions et les objets, tout en les appliquant à des exercices hebdomadaires individuels dont le fil conducteur sera l’entité graphique de la lettre.
+> _En prenant la lettre et le chiffre comme prétexte d’unité visuelle, nous allons explorer les fondamentaux de la programmation visuelle. Nous apprendrons à décomposer les éléments graphiques en leurs composantes de base (points, lignes, formes) et à les recomposer de manière créative suivant les thématiques abordées en cours. (animation, interaction)
+> Grâce à des exercices pratiques, nous découvrirons comment utiliser le code pour créer des animations, des interactions et des effets visuels.
+> Nous aborderons des concepts clés tels que les variables, les boucles, les fonctions et les objets, tout en les appliquant à des exercices hebdomadaires individuels dont le fil conducteur sera l’entité graphique de la lettre._
 
 # Introduction
 
