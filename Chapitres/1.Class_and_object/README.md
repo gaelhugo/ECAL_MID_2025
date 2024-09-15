@@ -14,6 +14,33 @@
 - Constructeur
 - Méthodes
 
+```
+public class Boule {
+    private int x;
+    private int y;
+    private int rayon;
+    private int vitesse;
+    private int directionX;
+    private int directionY;
+
+    // Constructeur
+    public Boule(int x, int y, int rayon, int vitesse, int directionX, int directionY) {
+        this.x = x;
+        this.y = y;
+        this.rayon = rayon;
+        this.vitesse = vitesse;
+        this.directionX = directionX;
+        this.directionY = directionY;
+    }
+
+    // Méthodes
+    public void deplacer() {
+        x += vitesse * directionX;
+        y += vitesse * directionY;
+    }
+}
+```
+
 ## Héritage
 
 **Création de classes héritant des propriétés et méthodes d'une classe mère, une relation de spécialisation**
