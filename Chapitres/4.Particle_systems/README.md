@@ -2,6 +2,8 @@
 
 Un système de particules est un ensemble d'éléments graphiques simples, appelés particules, qui évoluent au fil du temps selon des règles spécifiques. Ces particules peuvent être animées pour créer des effets visuels complexes et réalistes, comme des feux d'artifice, de la fumée, de la pluie, de la neige, ou encore des explosions.
 
+![](assets/20240915_175400_particles.gif)
+
 ## Les éléments clés d'un système de particules
 
 - **La particule**:
@@ -39,6 +41,4 @@ Un système de particules est un ensemble d'éléments graphiques simples, appel
 - **Visualisations de données**: Représentation de flux de données, de nuages de points, etc.
 - **Art numérique**: Création d'œuvres d'art abstraites et dynamiques.
 
-**Exemple** : Feux d'artifice
-
-Pour simuler des feux d'artifice, on peut créer un émetteur qui génère des particules avec des vitesses initiales élevées et des durées de vie variables. On peut également appliquer une force de gravité pour faire tomber les particules.
+  ![](assets/20240915_175919_particles2.gif)

@@ -10,11 +10,14 @@ L'easing est une technique qui permet de contrôler la vitesse et l'accélérati
 - **Fonction d'easing**: Une fonction mathématique qui modifie la courbe d'interpolation, permettant ainsi de contrôler la vitesse du mouvement. ([link](https://github.com/AndrewRayCode/easing-utils/blob/master/src/easing.js))
 - **Courbe d'easing**: La représentation graphique d'une fonction d'easing. Elle visualise comment la valeur interpolée évolue au cours du temps. ([link](https://andrewraycode.github.io/easing-utils/gh-pages/))
 - **Types de mouvements**:
+
   - **Linéaire**: Le mouvement se produit à une vitesse constante.
   - **Accéléré**: Le mouvement commence lentement et s'accélère progressivement.
   - **Décéléré**: Le mouvement commence rapidement et ralentit progressivement.
   - **Accéléré-décéléré**: Le mouvement commence et finit lentement, avec une phase d'accélération au milieu.
   - **Rebond**: Le mouvement dépasse sa cible et revient légèrement en arrière avant de se stabiliser.
+
+    ![](assets/20240915_174748_tumblr_mj7bx09MDo1s5nl47o2_r1_500.gif)
 
 ## Animation de formes et de points
 
@@ -24,6 +27,8 @@ L'easing est une technique qui permet de contrôler la vitesse et l'accélérati
 - En utilisant frameCount dans les calculs, on peut créer des mouvements cycliques, des pulsations, des oscillations, etc.
 - Exemple: Pour faire grandir et rétrécir un cercle, on peut modifier son rayon en fonction d'une fonction sinusoïdale de frameCount.
 - Exemple: Pour déplacer une forme d'un point A à un point B, on calcule à chaque frame une nouvelle position en interpolant entre A et B.
+
+  ![](assets/20240915_174908_f8b555b999222d5f5b484ef81a03bd82c94969d7.gif)
 
 ## Fonctions d'easing
 
@@ -45,3 +50,5 @@ Simulations de mouvements physiques
 - **Physique des particules**: Simulation de particules qui interagissent entre elles (feu, fumée, etc.).
 - **Physique des solides**: Simulation de la chute d'objets, des collisions, etc.
 - **Dynamique des fluides**: Simulation de l'écoulement de l'eau, de l'air, etc.
+
+  ![](assets/20240915_175324_easing.gif)
