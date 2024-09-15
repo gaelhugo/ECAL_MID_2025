@@ -8,9 +8,12 @@ Qu'est-ce que le MIDI ? Le Musical Instrument Digital Interface est un protocole
 
 - **Périphériques MIDI**: Claviers, pads, pédales, interfaces audio, etc….
 - **Utilisation en creative coding**: Contrôler des paramètres audio, visuels ou autres dans votre code à l'aide d'instruments de musique:
+
   - **Mapping des notes MIDI**: Associer chaque note MIDI à une action spécifique dans votre code (changer une couleur, déclencher un son, etc.).
   - **Utilisation de la vélocité**: Utiliser la force avec laquelle une touche est pressée pour contrôler différents paramètres.
   - **Contrôle en temps réel**: Réagir instantanément aux changements de notes ou de vélocité.
+
+    ![](assets/20240915_182323_midic.gif)
 
 ## Boutons, capteurs
 
@@ -22,6 +25,9 @@ Qu'est-ce que le MIDI ? Le Musical Instrument Digital Interface est un protocole
 
 - **Capture vidéo en temps réel**: Utiliser la webcam de votre ordinateur ou une caméra externe.
 - **Traitement d'images**:
+
   - **Détection de mouvements**: Identifier les zones en mouvement dans une image.
   - **Reconnaissance de formes**: Identifier des formes spécifiques dans une image.
   - **Tracking d'objets**: Suivre un objet en mouvement.
+
+    ![](assets/20240915_182221_facemesh.gif)
