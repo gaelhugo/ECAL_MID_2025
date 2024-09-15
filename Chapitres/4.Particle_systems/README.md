@@ -4,7 +4,7 @@ Un système de particules est un ensemble d'éléments graphiques simples, appel
 
 ## Les éléments clés d'un système de particules
 
-- La particule:
+- **La particule**:
 
   - C'est l'unité de base du système.
   - Chaque particule possède un ensemble de propriétés :
@@ -16,25 +16,29 @@ Un système de particules est un ensemble d'éléments graphiques simples, appel
     - Taille: Taille de la particule.
     - Rotation: Angle de rotation de la particule.
 
-- L'émetteur:
-- C'est l'élément qui crée de nouvelles particules.
-- Il définit les propriétés initiales des particules (position, vitesse, couleur, etc.).
-- Il peut être statique ou en mouvement.
-- Les forces:
-- Les forces agissent sur les particules et modifient leur mouvement.
-- Exemples de forces : gravité, vent, forces répulsives, forces attractives.
-- Mise en œuvre en javascript
+- **L'émetteur**:
 
-  - Création d'une classe Particle
-  - Gestion de la durée de vie des particules
-  - Forces agissant sur les particules (gravité, vent, etc.)
+  - C'est l'élément qui crée de nouvelles particules.
+  - Il définit les propriétés initiales des particules (position, vitesse, couleur, etc.).
+  - Il peut être statique ou en mouvement.
+
+- **Les forces**:
+
+  - Les forces agissent sur les particules et modifient leur mouvement.
+  - Exemples de forces : gravité, vent, forces répulsives, forces attractives.
+
+## Mise en œuvre en javascript
+
+- Création d'une classe Particle
+- Gestion de la durée de vie des particules
+- Forces agissant sur les particules (gravité, vent, etc.)
 
 ## Applications
 
-- Jeux vidéo: Particules d'éclaboussures, de feu, de magie, etc.
-- Visualisations de données: Représentation de flux de données, de nuages de points, etc.
-- Art numérique: Création d'œuvres d'art abstraites et dynamiques.
+- **Jeux vidéo**: Particules d'éclaboussures, de feu, de magie, etc.
+- **Visualisations de données**: Représentation de flux de données, de nuages de points, etc.
+- **Art numérique**: Création d'œuvres d'art abstraites et dynamiques.
 
-Exemple : Feux d'artifice
+**Exemple** : Feux d'artifice
 
 Pour simuler des feux d'artifice, on peut créer un émetteur qui génère des particules avec des vitesses initiales élevées et des durées de vie variables. On peut également appliquer une force de gravité pour faire tomber les particules.

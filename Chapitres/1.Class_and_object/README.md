@@ -2,11 +2,11 @@
 
 ## Concepts fondamentaux
 
-- Objet : instance d'une classe, possède des propriétés et des méthodes
-  - Objet : Un personnage de jeu vidéo est un objet JavaScript. Chaque personnage (instance) est unique (apparence, compétences, etc.) mais partage les mêmes caractéristiques (santé, mana, etc.) et peut effectuer les mêmes actions (attaquer, se déplacer, sauter).
-  - Propriétés : La force, l'agilité, le niveau, l'inventaire sont des propriétés d'un personnage.
-  - Méthodes : Attaquer, se défendre, utiliser un sort, ouvrir une porte sont des méthodes d'un personnage.
-- Classe : modèle pour créer des objets
+- **Objet** : instance d'une classe, possède des propriétés et des méthodes
+  - **Objet** : Un personnage de jeu vidéo est un objet JavaScript. Chaque personnage (instance) est unique (apparence, compétences, etc.) mais partage les mêmes caractéristiques (santé, mana, etc.) et peut effectuer les mêmes actions (attaquer, se déplacer, sauter).
+  - **Propriétés** : La force, l'agilité, le niveau, l'inventaire sont des propriétés d'un personnage.
+  - **Méthodes** : Attaquer, se défendre, utiliser un sort, ouvrir une porte sont des méthodes d'un personnage.
+- **Classe** : modèle pour créer des objets
 
 ## Création de classes en js
 
@@ -16,12 +16,12 @@
 
 ## Héritage
 
-Création de classes héritant des propriétés et méthodes d'une classe mère, une relation de spécialisation
+**Création de classes héritant des propriétés et méthodes d'une classe mère, une relation de spécialisation**
 
 - Imaginez une classe de base comme un modèle général, un plan de base. Par exemple, la classe Forme. Cette classe définit les propriétés et les méthodes communes à toutes les formes : une couleur, une position, la possibilité de se déplacer, etc.
 - Une classe dérivée est une version plus spécifique de la classe de base. Elle hérite de toutes les caractéristiques de la classe de base et peut en ajouter de nouvelles ou en modifier certaines. Par exemple, la classe Cercle est une spécialisation de la classe Forme. Elle hérite de la couleur et de la position, mais ajoute une propriété spécifique : le rayon.
 
-Pourquoi utiliser l'héritage ?
+**Pourquoi utiliser l'héritage** ?
 
 - Réutilisation de code: Évitez de réécrire du code en réutilisant les propriétés et les méthodes déjà définies dans la classe de base.
 - Organisation du code: Créez une hiérarchie de classes qui reflète les relations entre les objets de votre application.
