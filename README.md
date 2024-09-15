@@ -25,7 +25,7 @@
 
 - Design:
 
-  - **UI/UX design**: Création d'interfaces utilisateur personnalisées. ([ref](https://variable.io/))
+  - **UI/UX design**: Création d'interfaces utilisateur personnalisées. ([ref](https://variable.io/), [ref](https://hakim.se/))
   - **Motion design**: Réalisation d'animations pour le web et la vidéo.([ref](https://field.io/))
 
 - Musique:
