@@ -15,30 +15,49 @@
 - Méthodes
 
 ```
-public class Boule {
-    private int x;
-    private int y;
-    private int rayon;
-    private int vitesse;
-    private int directionX;
-    private int directionY;
+class Ball {
+  constructor(x, y, rayon, couleur, vitesseX, vitesseY) {
+    this.x = x;
+    this.y = y;
+    this.rayon = rayon;
+    this.couleur = couleur;
+    this.vitesseX = vitesseX;
+    this.vitesseY = vitesseY;
+  }
 
-    // Constructeur
-    public Boule(int x, int y, int rayon, int vitesse, int directionX, int directionY) {
-        this.x = x;
-        this.y = y;
-        this.rayon = rayon;
-        this.vitesse = vitesse;
-        this.directionX = directionX;
-        this.directionY = directionY;
-    }
+  // Méthode pour dessiner la balle sur un canvas
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.rayon, 0, Math.PI * 2);
+    ctx.fillStyle = this.couleur;
+    ctx.fill();
+    ctx.closePath();
+  }
 
-    // Méthodes
-    public void deplacer() {
-        x += vitesse * directionX;
-        y += vitesse * directionY;
-    }
+  // Méthode pour mettre à jour la position de la balle
+  update() {
+    this.x += this.vitesseX;
+    this.y += this.vitesseY;
+  }
 }
+```
+
+## Instanciation
+
+```
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+
+const ball = new Ball(100, 100, 20, 'red', 2, 2);
+
+function animate() {
+  requestAnimationFrame(animate);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ball.update();
+  ball.draw(ctx);
+}
+
+animate();
 ```
 
 ## Héritage
