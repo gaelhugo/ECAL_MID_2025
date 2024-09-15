@@ -26,16 +26,23 @@ Nous aborderons des concepts clés tels que les variables, les boucles, les fonc
   - Interfaces interactives: Développement d'installations artistiques interactives.
 
 - Design:
-- UI/UX design: Création d'interfaces utilisateur personnalisées.
-- Motion design: Réalisation d'animations pour le web et la vidéo.
+
+  - UI/UX design: Création d'interfaces utilisateur personnalisées.
+  - Motion design: Réalisation d'animations pour le web et la vidéo.
+
 - Musique:
-- Musique générative: Composition de musique algorithmique.
-- Visualisations musicales: Création de représentations visuelles de la musique.
+
+  - Musique générative: Composition de musique algorithmique.
+  - Visualisations musicales: Création de représentations visuelles de la musique.
+
 - Jeux vidéo:
-- Développement de jeux indépendants: Création de jeux simples
+
+  - Développement de jeux indépendants: Création de jeux simples
+
 - Vie quotidienne:
-- Automatisation de tâches: Création de scripts pour automatiser des tâches répétitives (par exemple, renommer des fichiers en masse).
-- Personnalisation d'environnements numériques: Création de thèmes personnalisés pour les ordinateurs ou les smartphones.
+
+  - Automatisation de tâches: Création de scripts pour automatiser des tâches répétitives (par exemple, renommer des fichiers en masse).
+  - Personnalisation d'environnements numériques: Création de thèmes personnalisés pour les ordinateurs ou les smartphones.
 
 ## Compétences
 
@@ -57,10 +64,13 @@ Les avantages de Vanilla JavaScript
   - Vous apprenez les concepts fondamentaux de la programmation comme les variables, les fonctions, les boucles et les objets, sans être "masqués" par une couche supplémentaire.
 
 - Flexibilité totale:
-- Vous avez un contrôle total sur votre code. Vous pouvez personnaliser chaque aspect de votre projet sans être limité par les fonctions pré-définies d'une bibliothèque.
-- Vous pouvez choisir d'utiliser d'autres bibliothèques ou frameworks en plus de Vanilla JavaScript pour étendre les fonctionnalités de votre projet.
+
+  - Vous avez un contrôle total sur votre code. Vous pouvez personnaliser chaque aspect de votre projet sans être limité par les fonctions pré-définies d'une bibliothèque.
+  - Vous pouvez choisir d'utiliser d'autres bibliothèques ou frameworks en plus de Vanilla JavaScript pour étendre les fonctionnalités de votre projet.
+
 - Performances:
-- En évitant les surcharges liées aux bibliothèques, vous pouvez obtenir des performances optimales, surtout pour les projets plus complexes.
+
+  - En évitant les surcharges liées aux bibliothèques, vous pouvez obtenir des performances optimales, surtout pour les projets plus complexes.
 
 Quand choisir Vanilla JavaScript ?
 
