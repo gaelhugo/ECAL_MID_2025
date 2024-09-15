@@ -4,8 +4,11 @@
   - Le Document Object Model : une représentation arborescente d'un document HTML.
   - **Les différents types de nœuds** : éléments, attributs, texte.
 - **Qu'est-ce que le SVG ?**
+
   - Scalable Vector Graphics : un format graphique vectoriel pour la création d'images 2D.
   - Intégration du SVG dans le DOM.
+
+    ![](assets/20240915_183655_SVG.gif)
 
 ### Manipulation du DOM
 
@@ -27,6 +30,8 @@
 
   - addEventListener, removeEventListener.
   - Les différents types d'événements (clic, survol, etc.).
+
+    ![](assets/20240915_183529_dom2.gif)
 
 ### Introduction au SVG
 

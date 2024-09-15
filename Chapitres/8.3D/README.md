@@ -2,6 +2,8 @@
 
 L'utilisation de la 3D en JavaScript, notamment grâce à des bibliothèques comme Three.js, a révolutionné le monde du creative coding. Elle offre des possibilités infinies pour créer des expériences visuelles immersives et interactives.
 
+![](assets/20240915_182734_three.gif)
+
 ## Les fondamentaux
 
 - **La scène**: C'est le conteneur principal où tous les éléments 3D sont placés.
@@ -27,3 +29,5 @@ L'utilisation de la 3D en JavaScript, notamment grâce à des bibliothèques com
 - **L’interaction**: Permettre à l'utilisateur d'interagir avec votre scène
 - **Raycasting**: Détecter les intersections entre un rayon et les objets de la scène pour simuler des clics sur des objets.
 - **Contrôles orbitaux**: Permettre à l'utilisateur de faire tourner la caméra autour d'un point central pour explorer la scène sous différents angles.
+
+  ![](assets/20240915_182952_camera.gif)
