@@ -45,7 +45,19 @@ class Ball {
 ## Instanciation
 
 ```
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
 
+const ball = new Ball(100, 100, 20, 'red', 2, 2);
+
+function animate() {
+  requestAnimationFrame(animate);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ball.update();
+  ball.draw(ctx);
+}
+
+animate();
 ```
 
 ## Héritage
