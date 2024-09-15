@@ -105,8 +105,8 @@ animate();
   }
   ```
 
-```apache
-class Rectangle extends Shape {
+  ```apache
+  class Rectangle extends Shape {
   constructor(x, y, width, height) {
     super(x, y);
     this.width = width;
@@ -116,25 +116,24 @@ class Rectangle extends Shape {
   draw(ctx) {
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
-}
-```
+  }
+  ```
 
-```apache
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
+  ```apache
+  const canvas = document.getElementById('myCanvas');
+  const ctx = canvas.getContext('2d');
 
-const ball = new Ball(100, 100, 20, 'red');
-const rect = new Rectangle(200, 200, 50, 30);
+  const ball = new Ball(100, 100, 20, 'red');
+  const rect = new Rectangle(200, 200, 50, 30);
 
-function animate() {
-  requestAnimationFrame(animate);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ball.draw(ctx);
-  rect.draw(ctx);
-}
-
-animate();
-```
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ball.draw(ctx);
+    rect.draw(ctx);
+  }
+  animate();
+  ```
 
 ## Application aux projets créatifs
 
