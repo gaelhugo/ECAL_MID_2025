@@ -8,7 +8,7 @@
 
 # Introduction
 
-## Pourquoi utiliser le Creative Coding ?
+## A quoi sert le Creative Coding ?
 
 - **Expérimentation artistique**: Créer des animations, des jeux vidéo, de la musique générative, de l'art interactif, des visualisations de données, etc.
 - **Prototypage rapide**: Tester rapidement de nouvelles idées et itérer rapidement.
@@ -19,23 +19,23 @@
 
 - Arts visuels:
 
-  - **Generative art**: Création d'œuvres d'art uniques et évolutives.
+  - **Generative art**: Création d'œuvres d'art uniques et évolutives. ([ref](https://www.instagram.com/zach.lieberman/https:/))
   - **Animations**: Réalisation de vidéos animées complexes.
-  - **Interfaces interactives**: Développement d'installations artistiques interactives.
+  - **Interfaces interactives**: Développement d'installations artistiques interactives. ([ref](https://www.teamlab.art/), [ref](https://artcom.de/en/))
 
 - Design:
 
-  - **UI/UX design**: Création d'interfaces utilisateur personnalisées.
-  - **Motion design**: Réalisation d'animations pour le web et la vidéo.
+  - **UI/UX design**: Création d'interfaces utilisateur personnalisées. ([ref](https://variable.io/))
+  - **Motion design**: Réalisation d'animations pour le web et la vidéo.([ref](https://field.io/))
 
 - Musique:
 
   - **Musique générative**: Composition de musique algorithmique.
-  - **Visualisations musicales**: Création de représentations visuelles de la musique.
+  - **Visualisations musicales**: Création de représentations visuelles de la musique. ([ref](https://www.ryojiikeda.com/))
 
 - Jeux vidéo:
 
-  - **Développement de jeux**: Création de jeux simples
+  - **Développement de jeux**: Création de jeux simples ([ref](https://www.kamibox.de/))
 
 - Vie quotidienne:
 
