@@ -102,8 +102,8 @@ npm create vite@latest
 ## Chapitres
 
 1. [Classes et Objets](Chapitres/1.Class_and_object/README.md)
-2. [Trigonométrie](Chapitres/2.Trigonometry/README.md)
-3. [Mouvement et easing](Chapitres/3.Motion_and_easing/README.md)
+2. [Mouvement et easing](Chapitres/2.Motion_and_easing/README.md)
+3. [Trigonométrie](Chapitres/3.Trigonometry/README.md)
 4. [Systèmes de particules](Chapitres/4.Particle_systems/README.md)
 5. [Analyse de pixels et Raster](Chapitres/5.Pixels_and_raster/README.md)
 6. [Son](Chapitres/6.Sound/README.md)
