@@ -31,7 +31,7 @@ export default class App {
     for (let i = 0; i < stepX; i++) {
       for (let j = 0; j < stepY; j++) {
         // do something
-        monCercle.drawCross(i * spaceX + radius, j * spaceY + radius, radius);
+        monCercle.draw(i * spaceX + radius, j * spaceY + radius, radius);
       }
     }
   }
