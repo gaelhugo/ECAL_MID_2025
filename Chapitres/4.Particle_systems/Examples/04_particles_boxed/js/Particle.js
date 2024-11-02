@@ -54,13 +54,7 @@ export default class Particle {
    */
   draw(ctx) {
     ctx.beginPath();
-    ctx.arc(
-      this.x,
-      this.y,
-      this.isRepelled ? this.radius * 3 : this.radius,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     // Changer la couleur en fonction de l'état
     ctx.fillStyle = this.isRepelled ? "red" : "white";
     ctx.fill();
