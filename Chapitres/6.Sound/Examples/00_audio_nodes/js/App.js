@@ -7,6 +7,7 @@ import DestinationModule from "./modules/DestinationModule.js";
 import KeyboardModule from "./modules/KeyboardModule.js";
 import SoundwaveVisualizerModule from "./modules/SoundwaveVisualizerModule.js";
 import SequencerModule from "./modules/SequencerModule.js";
+import SlicerModule from "./modules/SlicerModule.js";
 
 export default class App {
   constructor() {
@@ -76,6 +77,7 @@ export default class App {
     this.createModule("reverb", leftMargin + 300, 100 + verticalSpacing * 2);
     this.createModule("lfo", leftMargin + 600, 100 + verticalSpacing * 2);
     this.createModule("sequencer", leftMargin + 300, 100 + verticalSpacing);
+    this.createModule("slicer", leftMargin + 900, 100 + verticalSpacing * 2);
   }
 
   createModule(type, x, y) {
@@ -109,6 +111,9 @@ export default class App {
         break;
       case "sequencer":
         module = new SequencerModule(this.audioContext, id, x, y);
+        break;
+      case "slicer":
+        module = new SlicerModule(this.audioContext, id, x, y);
         break;
     }
 
