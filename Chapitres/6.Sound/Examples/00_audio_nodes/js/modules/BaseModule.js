@@ -102,9 +102,13 @@ export default class BaseModule {
     }
   }
 
-  disconnect(destModule) {
-    if (this.audioNode && destModule.audioNode) {
-      this.audioNode.disconnect(destModule.audioNode);
+  disconnect(module) {
+    try {
+      if (this.audioNode && module.audioNode) {
+        this.audioNode.disconnect(module.audioNode);
+      }
+    } catch (e) {
+      console.log("Already disconnected or invalid connection");
     }
   }
 

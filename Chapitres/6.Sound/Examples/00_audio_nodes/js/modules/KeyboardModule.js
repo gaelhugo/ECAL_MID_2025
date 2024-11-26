@@ -4,6 +4,7 @@ export default class KeyboardModule extends BaseModule {
   constructor(audioContext, id, x, y) {
     super(audioContext, id, x, y);
     this.title = "Keyboard";
+    this.inputs = ["trigger"];
     this.outputs = ["frequency"];
     this.connectedOscillators = new Set();
     this.sustain = true; // Default to sustain mode
@@ -37,6 +38,17 @@ export default class KeyboardModule extends BaseModule {
     title.textContent = this.title;
     element.appendChild(title);
 
+    // Add control panel
+    const controlPanel = document.createElement("div");
+    controlPanel.className = "keyboard-control-panel";
+
+    // Add note display
+    const noteDisplay = document.createElement("div");
+    noteDisplay.className = "keyboard-note-display";
+    noteDisplay.innerHTML =
+      '<span class="note-label">Note:</span> <span class="note-value">-</span>';
+    controlPanel.appendChild(noteDisplay);
+
     // Add sustain control
     const sustainControl = document.createElement("div");
     sustainControl.className = "sustain-control";
@@ -54,12 +66,17 @@ export default class KeyboardModule extends BaseModule {
       if (!this.sustain) {
         this.stopAllNotes();
       }
-      this.updateKeyEventListeners(); // Update event listeners when sustain changes
+      this.updateKeyEventListeners();
     });
 
     sustainControl.appendChild(sustainLabel);
     sustainControl.appendChild(sustainCheckbox);
-    element.appendChild(sustainControl);
+    controlPanel.appendChild(sustainControl);
+
+    element.appendChild(controlPanel);
+
+    // Store the display element reference
+    this.noteDisplay = noteDisplay.querySelector(".note-value");
 
     // Add keyboard container
     const keyboardContainer = document.createElement("div");
@@ -74,10 +91,19 @@ export default class KeyboardModule extends BaseModule {
     // Add connection points
     const connectionPoints = document.createElement("div");
     connectionPoints.className = "connection-points";
+
+    // Add input point for sequencer control
+    const inputPoint = document.createElement("div");
+    inputPoint.className = "connection-point input";
+    inputPoint.style.top = "30%";
+    connectionPoints.appendChild(inputPoint);
+
+    // Add output point
     const outputPoint = document.createElement("div");
     outputPoint.className = "connection-point output";
-    outputPoint.style.top = "50%";
+    outputPoint.style.top = "70%";
     connectionPoints.appendChild(outputPoint);
+
     element.appendChild(connectionPoints);
 
     this.element = element;
@@ -121,22 +147,28 @@ export default class KeyboardModule extends BaseModule {
     newKey.addEventListener("mousedown", (e) => {
       e.stopPropagation();
       this.playNote(note);
-      newKey.classList.add("active");
+      this.highlightKey(note, true);
+      // Update note display
+      this.noteDisplay.textContent = note;
     });
 
     // Add mouseup and mouseleave events
     newKey.addEventListener("mouseup", () => {
       if (!this.sustain) {
         this.stopAllNotes();
+        this.highlightKey(note, false);
+        // Clear note display
+        this.noteDisplay.textContent = "-";
       }
-      newKey.classList.remove("active");
     });
 
     newKey.addEventListener("mouseleave", () => {
       if (!this.sustain) {
         this.stopAllNotes();
+        this.highlightKey(note, false);
+        // Clear note display
+        this.noteDisplay.textContent = "-";
       }
-      newKey.classList.remove("active");
     });
 
     return newKey;
@@ -181,6 +213,16 @@ export default class KeyboardModule extends BaseModule {
         );
       }
     });
+
+    // Clear all key highlights
+    if (this.element) {
+      const keys = this.element.querySelectorAll(".piano-key");
+      keys.forEach((key) => key.classList.remove("active"));
+      // Clear note display
+      if (this.noteDisplay) {
+        this.noteDisplay.textContent = "-";
+      }
+    }
   }
 
   connect(module) {
@@ -226,5 +268,51 @@ export default class KeyboardModule extends BaseModule {
 
   stop() {
     // Nothing to do on stop for the keyboard
+  }
+
+  handleInput(type, value) {
+    if (type === "trigger") {
+      // First remove all active highlights
+      const keys = this.element.querySelectorAll(".piano-key");
+      keys.forEach((key) => key.classList.remove("active"));
+
+      if (value) {
+        // Note on
+        this.playNote(value);
+        // Update note display
+        this.noteDisplay.textContent = value;
+
+        // Find and highlight the specific key
+        const keyToHighlight = this.element.querySelector(
+          `.piano-key[data-note="${value}"]`
+        );
+        if (keyToHighlight) {
+          keyToHighlight.classList.add("active");
+        }
+      } else {
+        // Note off
+        if (!this.sustain) {
+          this.stopAllNotes();
+          // Clear note display
+          this.noteDisplay.textContent = "-";
+        }
+      }
+    }
+  }
+
+  // Add this method to highlight/unhighlight keys
+  highlightKey(note, active) {
+    if (!this.element) return;
+
+    const keys = this.element.querySelectorAll(".piano-key");
+    keys.forEach((key) => {
+      if (key.dataset.note === note) {
+        if (active) {
+          key.classList.add("active");
+        } else {
+          key.classList.remove("active");
+        }
+      }
+    });
   }
 }

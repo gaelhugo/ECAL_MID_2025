@@ -6,12 +6,12 @@ export default class LFOModule extends BaseModule {
     this.type = "lfo";
     this.height = 180;
 
-    // Create oscillator and gain for LFO
-    this.audioNode = this.audioContext.createOscillator();
-    this.gainNode = this.audioContext.createGain();
+    // Initialize connectedModules Set
+    this.connectedModules = new Set();
 
-    // Set up initial connections
-    this.audioNode.connect(this.gainNode);
+    // Create oscillator and gain for LFO
+    this.createOscillator();
+    this.gainNode = this.audioContext.createGain();
 
     // Set up outputs
     this.outputs = [{ x: this.width, y: this.height / 2 }];
@@ -63,45 +63,137 @@ export default class LFOModule extends BaseModule {
     ];
 
     // Set initial values
-    this.audioNode.frequency.setValueAtTime(2, this.audioContext.currentTime);
     this.gainNode.gain.setValueAtTime(50, this.audioContext.currentTime);
   }
 
-  start() {
-    if (this.audioNode) {
-      this.audioNode.start();
-      this.isPlaying = true;
-    }
-  }
+  createOscillator() {
+    this.audioNode = this.audioContext.createOscillator();
+    this.audioNode.frequency.setValueAtTime(2, this.audioContext.currentTime);
 
-  stop() {
-    if (this.audioNode && this.isPlaying) {
-      this.audioNode.stop();
-      this.isPlaying = false;
-      // Create new oscillator
-      const newOsc = this.audioContext.createOscillator();
-      newOsc.type = this.audioNode.type;
-      newOsc.frequency.value = this.audioNode.frequency.value;
-      this.audioNode = newOsc;
+    // Connect to gain node if it exists
+    if (this.gainNode) {
       this.audioNode.connect(this.gainNode);
     }
   }
 
-  connect(destModule) {
-    if (this.gainNode && destModule.audioNode) {
-      if (destModule.type === "oscillator") {
-        // Connect to frequency for modulation
-        this.gainNode.connect(destModule.audioNode.frequency);
-      } else {
-        this.gainNode.connect(destModule.audioNode);
+  start() {
+    if (!this.isPlaying) {
+      this.createOscillator(); // Create new oscillator
+      this.audioNode.connect(this.gainNode);
+      this.audioNode.start();
+      this.isPlaying = true;
+      this.reconnectAll();
+    }
+  }
+
+  stop() {
+    if (this.isPlaying) {
+      this.audioNode.stop();
+      this.audioNode.disconnect();
+      this.isPlaying = false;
+
+      // Clear all connections when stopping
+      this.connectedModules.forEach((module) => {
+        if (
+          module.constructor.name === "SoundwaveVisualizerModule" &&
+          module.vizGain
+        ) {
+          try {
+            module.vizGain.disconnect();
+          } catch (e) {
+            console.log("Viz gain already disconnected");
+          }
+        }
+      });
+      this.connectedModules.clear();
+
+      // Disconnect gainNode from all destinations
+      try {
+        this.gainNode.disconnect();
+      } catch (e) {
+        console.log("Gain node already disconnected");
       }
     }
   }
 
-  disconnect(destModule) {
-    if (this.gainNode && destModule.audioNode) {
-      this.gainNode.disconnect(destModule.audioNode.frequency);
-      this.gainNode.disconnect(destModule.audioNode);
+  connect(module) {
+    if (module.constructor.name === "OscillatorModule") {
+      if (module.audioNode && module.audioNode.frequency) {
+        // Only connect if we're playing
+        if (this.isPlaying) {
+          // Connect LFO's gain node to the oscillator's frequency
+          this.gainNode.connect(module.audioNode.frequency);
+        }
+        // Store the connection
+        this.connectedModules.add(module);
+      }
+    } else if (module.constructor.name === "SoundwaveVisualizerModule") {
+      // For visualizer, connect both the oscillator and gain node
+      if (this.isPlaying) {
+        // Create a gain node specifically for visualization
+        const vizGain = this.audioContext.createGain();
+        vizGain.gain.value = 1; // Full amplitude for better visualization
+
+        // Connect oscillator through the viz gain to the analyzer
+        this.audioNode.connect(vizGain);
+        vizGain.connect(module.audioNode);
+
+        // Store the viz gain node for later cleanup
+        module.vizGain = vizGain;
+      }
+      this.connectedModules.add(module);
+    }
+  }
+
+  disconnect(module) {
+    if (module.constructor.name === "OscillatorModule") {
+      try {
+        if (module.audioNode && module.audioNode.frequency) {
+          // Disconnect LFO's gain node from the oscillator's frequency
+          this.gainNode.disconnect(module.audioNode.frequency);
+        }
+      } catch (e) {
+        console.log("Already disconnected");
+      }
+      this.connectedModules.delete(module);
+    } else if (module.constructor.name === "SoundwaveVisualizerModule") {
+      try {
+        // Disconnect both oscillator and gain connections
+        if (module.vizGain) {
+          this.audioNode.disconnect(module.vizGain);
+          module.vizGain.disconnect(module.audioNode);
+        }
+      } catch (e) {
+        console.log("Already disconnected");
+      }
+      this.connectedModules.delete(module);
+    }
+  }
+
+  reconnectAll() {
+    if (this.isPlaying) {
+      this.connectedModules.forEach((module) => {
+        if (module.constructor.name === "OscillatorModule") {
+          if (module.audioNode && module.audioNode.frequency) {
+            try {
+              this.gainNode.connect(module.audioNode.frequency);
+            } catch (e) {
+              console.log("Failed to reconnect oscillator", e);
+            }
+          }
+        } else if (module.constructor.name === "SoundwaveVisualizerModule") {
+          try {
+            // Recreate visualization connection
+            const vizGain = this.audioContext.createGain();
+            vizGain.gain.value = 1;
+            this.audioNode.connect(vizGain);
+            vizGain.connect(module.audioNode);
+            module.vizGain = vizGain;
+          } catch (e) {
+            console.log("Failed to reconnect visualizer", e);
+          }
+        }
+      });
     }
   }
 }

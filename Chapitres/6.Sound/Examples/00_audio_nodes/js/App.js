@@ -6,6 +6,7 @@ import ReverbModule from "./modules/ReverbModule.js";
 import DestinationModule from "./modules/DestinationModule.js";
 import KeyboardModule from "./modules/KeyboardModule.js";
 import SoundwaveVisualizerModule from "./modules/SoundwaveVisualizerModule.js";
+import SequencerModule from "./modules/SequencerModule.js";
 
 export default class App {
   constructor() {
@@ -74,6 +75,7 @@ export default class App {
     this.createModule("delay", leftMargin, 100 + verticalSpacing * 2);
     this.createModule("reverb", leftMargin + 300, 100 + verticalSpacing * 2);
     this.createModule("lfo", leftMargin + 600, 100 + verticalSpacing * 2);
+    this.createModule("sequencer", leftMargin + 300, 100 + verticalSpacing);
   }
 
   createModule(type, x, y) {
@@ -104,6 +106,9 @@ export default class App {
         break;
       case "visualizer":
         module = new SoundwaveVisualizerModule(this.audioContext, id, x, y);
+        break;
+      case "sequencer":
+        module = new SequencerModule(this.audioContext, id, x, y);
         break;
     }
 
@@ -195,22 +200,25 @@ export default class App {
       const clickX = e.clientX;
       const clickY = e.clientY;
 
-      // Check each connection for delete button click
+      // Find the closest wire to the click
+      let closestConnection = null;
+      let minDistance = Infinity;
+
       for (const connection of this.connections) {
-        const { startX, startY, endX, endY } = connection.wireCoords;
-        const midX = (startX + endX) / 2;
-        const midY = (startY + endY) / 2;
-
-        // Check if click is within delete button
-        const dx = clickX - midX;
-        const dy = clickY - midY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance <= 10) {
-          // 10 is the radius of delete button
-          this.removeConnection(connection);
-          break;
+        const { isNear, distance } = this.isPointNearWire(
+          clickX,
+          clickY,
+          connection
+        );
+        if (isNear && distance < minDistance) {
+          minDistance = distance;
+          closestConnection = connection;
         }
+      }
+
+      // If we found a close connection, remove it
+      if (closestConnection) {
+        this.removeConnection(closestConnection);
       }
     });
 
@@ -240,6 +248,15 @@ export default class App {
   }
 
   createConnection(fromModule, toModule) {
+    // Check if connection already exists
+    const existingConnection = this.connections.find(
+      (conn) => conn.from === fromModule.id && conn.to === toModule.id
+    );
+
+    if (existingConnection) {
+      return; // Don't create duplicate connections
+    }
+
     const connection = {
       from: fromModule.id,
       to: toModule.id,
@@ -251,7 +268,15 @@ export default class App {
 
     // Make audio connection if playing
     if (this.isPlaying) {
-      fromModule.connect(toModule);
+      if (
+        fromModule.constructor.name === "LFOModule" &&
+        toModule.constructor.name === "OscillatorModule"
+      ) {
+        // For LFO connections, always connect regardless of play state
+        fromModule.connect(toModule);
+      } else {
+        fromModule.connect(toModule);
+      }
     }
 
     // Visual feedback
@@ -271,7 +296,13 @@ export default class App {
 
     if (fromModule && toModule) {
       // Remove audio connection
-      if (this.isPlaying) {
+      if (
+        fromModule.constructor.name === "LFOModule" &&
+        toModule.constructor.name === "OscillatorModule"
+      ) {
+        // For LFO, disconnect from the frequency parameter
+        fromModule.gainNode.disconnect(toModule.audioNode.frequency);
+      } else {
         fromModule.disconnect(toModule);
       }
 
@@ -284,11 +315,29 @@ export default class App {
       );
       if (outputPoint) outputPoint.classList.remove("connected");
       if (inputPoint) inputPoint.classList.remove("connected");
+
+      // Handle specific module disconnections
+      if (
+        fromModule.constructor.name === "KeyboardModule" &&
+        toModule.constructor.name === "OscillatorModule"
+      ) {
+        if (toModule.audioNode && toModule.audioNode.frequency) {
+          toModule.audioNode.frequency.setValueAtTime(
+            0,
+            this.audioContext.currentTime
+          );
+        }
+      } else if (
+        fromModule.constructor.name === "SequencerModule" &&
+        toModule.constructor.name === "KeyboardModule"
+      ) {
+        toModule.stopAllNotes();
+      }
     }
 
     // Remove from connections array
     this.connections = this.connections.filter(
-      (conn) => conn.from !== connection.from || conn.to !== connection.to
+      (conn) => !(conn.from === connection.from && conn.to === connection.to)
     );
   }
 
@@ -322,14 +371,51 @@ export default class App {
   }
 
   stopAudio() {
-    // Stop all modules
+    // First stop all modules
     this.modules.forEach((module) => {
+      // Stop the module
       module.stop();
+
+      // If it's a sequencer, make sure its play button shows "Play"
+      if (module.constructor.name === "SequencerModule") {
+        const playButton = module.element.querySelector(
+          ".sequencer-play-button"
+        );
+        if (playButton) {
+          playButton.textContent = "Play";
+        }
+        module.isPlaying = false;
+      }
+
+      // If it's an LFO, make sure to fully stop it
+      if (module.constructor.name === "LFOModule") {
+        module.stop();
+        module.isPlaying = false;
+      }
     });
 
+    // Suspend audio context
     this.audioContext.suspend();
     this.isPlaying = false;
     this.playButton.textContent = "Play";
+
+    // Clear all module states
+    this.connections.forEach((conn) => {
+      const fromModule = this.modules.get(conn.from);
+      const toModule = this.modules.get(conn.to);
+
+      // Handle special cases for stopping
+      if (fromModule && toModule) {
+        if (fromModule.constructor.name === "KeyboardModule") {
+          fromModule.stopAllNotes();
+        }
+        if (fromModule.constructor.name === "SequencerModule") {
+          if (fromModule.stepInterval) {
+            clearInterval(fromModule.stepInterval);
+          }
+        }
+      }
+    });
   }
 
   isPointNearWire(x, y, connection) {
@@ -366,7 +452,10 @@ export default class App {
     const dy = y - yy;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    return distance < 10; // 10 pixels threshold
+    return {
+      isNear: distance < 10, // 10 pixels threshold
+      distance: distance,
+    };
   }
 
   animate() {
@@ -395,7 +484,7 @@ export default class App {
           const endY = endRect.top + endRect.height / 2;
 
           conn.wireCoords = { startX, startY, endX, endY };
-          this.drawWire(startX, startY, endX, endY);
+          this.drawWire(startX, startY, endX, endY, false, conn);
         }
       }
     });
@@ -414,7 +503,7 @@ export default class App {
     requestAnimationFrame(() => this.animate());
   }
 
-  drawWire(x1, y1, x2, y2, isTemp = false) {
+  drawWire(x1, y1, x2, y2, isTemp = false, connection = null) {
     this.ctx.beginPath();
 
     // Calculate control points for a smoother curve
@@ -439,18 +528,18 @@ export default class App {
     this.ctx.shadowBlur = 0;
 
     // Draw delete button at the middle of the wire
-    if (!isTemp) {
+    if (!isTemp && connection) {
       const midX = (x1 + x2) / 2;
       const midY = (y1 + y2) / 2;
 
-      // Check if mouse is near the wire
-      const mouseDistance = this.isPointNearWire(
+      // Check if mouse is near this specific wire
+      const { isNear } = this.isPointNearWire(
         this.mousePos.x,
         this.mousePos.y,
-        { wireCoords: { startX: x1, startY: y1, endX: x2, endY: y2 } }
+        connection
       );
 
-      if (mouseDistance) {
+      if (isNear) {
         // Draw delete button
         this.ctx.beginPath();
         this.ctx.arc(midX, midY, 10, 0, Math.PI * 2);
