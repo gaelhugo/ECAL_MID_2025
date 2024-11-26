@@ -8,6 +8,8 @@ import KeyboardModule from "./modules/KeyboardModule.js";
 import SoundwaveVisualizerModule from "./modules/SoundwaveVisualizerModule.js";
 import SequencerModule from "./modules/SequencerModule.js";
 import SlicerModule from "./modules/SlicerModule.js";
+import SpectrumVisualizerModule from "./modules/SpectrumVisualizerModule.js";
+import ConfigurationManager from "./ConfigurationManager.js";
 
 export default class App {
   constructor() {
@@ -27,6 +29,7 @@ export default class App {
     this.setupEventListeners();
     this.createGlobalControls();
     this.animate();
+    this.configManager = new ConfigurationManager(this);
   }
 
   setupCanvas() {
@@ -78,10 +81,11 @@ export default class App {
     this.createModule("lfo", leftMargin + 600, 100 + verticalSpacing * 2);
     this.createModule("sequencer", leftMargin + 300, 100 + verticalSpacing);
     this.createModule("slicer", leftMargin + 900, 100 + verticalSpacing * 2);
+    this.createModule("spectrum", leftMargin + 600, 100 + verticalSpacing);
   }
 
-  createModule(type, x, y) {
-    const id = `module-${this.moduleId++}`;
+  createModule(type, x, y, existingId = null) {
+    const id = existingId || `module-${this.moduleId++}`;
     let module;
 
     switch (type) {
@@ -115,6 +119,9 @@ export default class App {
       case "slicer":
         module = new SlicerModule(this.audioContext, id, x, y);
         break;
+      case "spectrum":
+        module = new SpectrumVisualizerModule(this.audioContext, id, x, y);
+        break;
     }
 
     if (module) {
@@ -122,7 +129,10 @@ export default class App {
       document.body.appendChild(module.createDOM());
       this.makeDraggable(module);
       this.makeConnectable(module);
+      return module;
     }
+
+    return null;
   }
 
   makeDraggable(module) {

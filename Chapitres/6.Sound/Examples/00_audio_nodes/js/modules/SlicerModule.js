@@ -40,7 +40,7 @@ export default class SlicerModule extends BaseModule {
             this.bpmValueDisplay.textContent = value;
           }
           if (this.isPlaying) {
-            this.restartSequence();
+            this.scheduleSteps();
           }
         },
       },
@@ -104,7 +104,9 @@ export default class SlicerModule extends BaseModule {
         playButton.textContent = "Play";
       } else {
         if (this.audioContext.state === "running") {
-          this.start();
+          this.isPlaying = true;
+          this.currentStep = 0;
+          this.scheduleSteps();
           playButton.textContent = "Stop";
         }
       }
@@ -116,10 +118,8 @@ export default class SlicerModule extends BaseModule {
   }
 
   start() {
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.currentStep = 0;
-      this.scheduleSteps();
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
     }
   }
 
@@ -134,10 +134,20 @@ export default class SlicerModule extends BaseModule {
       // Clear visual feedback
       const steps = this.element.querySelectorAll(".slicer-step");
       steps.forEach((step) => step.classList.remove("playing"));
+
+      // Update play button text
+      const playButton = this.element.querySelector(".slicer-play-button");
+      if (playButton) {
+        playButton.textContent = "Play";
+      }
     }
   }
 
   scheduleSteps() {
+    if (this.stepInterval) {
+      clearInterval(this.stepInterval);
+    }
+
     const stepTime = ((60 / this.bpm) * 1000) / 2; // Sixteenth notes
 
     this.stepInterval = setInterval(() => {
@@ -156,13 +166,6 @@ export default class SlicerModule extends BaseModule {
       // Move to next step
       this.currentStep = (this.currentStep + 1) % this.steps;
     }, stepTime);
-  }
-
-  restartSequence() {
-    if (this.isPlaying) {
-      this.stop();
-      this.start();
-    }
   }
 
   connect(destModule) {

@@ -1058,3 +1058,66 @@ body {
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 2px 5px rgba(0, 0, 0, 0.5);
   }
 }
+
+// Update the spectrum visualizer styles
+.module-spectrum {
+  width: 260px !important; // Force width
+  height: 200px !important; // Force height
+  background: linear-gradient(45deg, #1a1a1a, #2d2d2d) !important;
+  border: 1px solid #333;
+
+  .module-title {
+    background: #333;
+    color: #fff;
+    margin-bottom: 15px;
+  }
+
+  .spectrum-canvas {
+    margin: 0 10px;
+    border-radius: 8px;
+    background: #1a1a1a;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.config-manager {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.config-button {
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 14px;
+
+  &:hover {
+    background: #2980b9;
+  }
+
+  &.save-button {
+    background: #2ecc71;
+    &:hover {
+      background: #27ae60;
+    }
+  }
+
+  &.load-button {
+    background: #e74c3c;
+    &:hover {
+      background: #c0392b;
+    }
+  }
+}
