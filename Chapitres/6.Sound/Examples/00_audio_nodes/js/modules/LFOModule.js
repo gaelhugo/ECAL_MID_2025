@@ -21,7 +21,7 @@ export default class LFOModule extends BaseModule {
       {
         type: "select",
         options: ["sine", "square", "sawtooth", "triangle"],
-        value: "square",
+        value: "sine",
         label: "LFO Wave",
         onChange: (value) => {
           if (this.audioNode) {
