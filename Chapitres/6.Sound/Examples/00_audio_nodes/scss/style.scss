@@ -1,0 +1,673 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #2a2a2a;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.node-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.2));
+}
+
+.audio-module {
+  position: absolute;
+  width: 150px;
+  background: #3a3a3a;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  color: white;
+  transition: box-shadow 0.2s ease;
+  cursor: move;
+
+  &.dragging {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+    opacity: 0.9;
+    z-index: 1000;
+  }
+
+  &.module-destination {
+    height: 80px;
+    .module-title {
+      margin-bottom: 0;
+    }
+  }
+
+  &.module-oscillator,
+  &.module-gain {
+    height: 120px;
+  }
+
+  &.module-reverb {
+    background: #2d3436;
+    border: 1px solid #00cec9;
+
+    .module-title {
+      background: #00cec9;
+      color: #2d3436;
+    }
+
+    .connection-point {
+      border-color: #00cec9;
+
+      &::before {
+        background: #00cec9;
+      }
+
+      &:hover {
+        border-color: #81ecec;
+
+        &::before {
+          background: #81ecec;
+        }
+      }
+
+      &.connected {
+        border-color: #55efc4;
+
+        &::before {
+          background: #55efc4;
+        }
+
+        &:hover {
+          border-color: #81ecec;
+
+          &::before {
+            background: #81ecec;
+          }
+        }
+      }
+    }
+
+    .module-control {
+      input[type="range"] {
+        &::-webkit-slider-thumb {
+          background: #00cec9;
+        }
+
+        &::-moz-range-thumb {
+          background: #00cec9;
+        }
+      }
+    }
+  }
+
+  &.module-delay {
+    height: 180px;
+    background: #2d3436;
+    border: 1px solid #fd79a8;
+
+    .module-title {
+      background: #fd79a8;
+      color: #2d3436;
+    }
+
+    .connection-point {
+      border-color: #fd79a8;
+
+      &::before {
+        background: #fd79a8;
+      }
+
+      &:hover {
+        border-color: #fab1a0;
+
+        &::before {
+          background: #fab1a0;
+        }
+      }
+
+      &.connected {
+        border-color: #ff7675;
+
+        &::before {
+          background: #ff7675;
+        }
+
+        &:hover {
+          border-color: #fab1a0;
+
+          &::before {
+            background: #fab1a0;
+          }
+        }
+      }
+    }
+
+    .module-control {
+      margin: 6px 0;
+
+      label {
+        font-size: 11px;
+        margin-bottom: 1px;
+      }
+
+      input[type="range"] {
+        margin: 2px 0;
+      }
+    }
+  }
+
+  &.module-lfo {
+    height: 180px;
+    background: #2d3436;
+    border: 1px solid #a8e6cf;
+
+    .module-title {
+      background: #a8e6cf;
+      color: #2d3436;
+    }
+
+    .connection-point {
+      border-color: #a8e6cf;
+
+      &::before {
+        background: #a8e6cf;
+      }
+
+      &:hover {
+        border-color: #dcedc1;
+
+        &::before {
+          background: #dcedc1;
+        }
+      }
+
+      &.connected {
+        border-color: #ffd3b6;
+
+        &::before {
+          background: #ffd3b6;
+        }
+      }
+    }
+
+    .module-control {
+      margin: 6px 0;
+
+      label {
+        font-size: 11px;
+        margin-bottom: 1px;
+      }
+
+      input[type="range"] {
+        margin: 2px 0;
+      }
+    }
+  }
+
+  &.module-cutoff {
+    height: 180px;
+    background: #2d3436;
+    border: 1px solid #6c5ce7;
+
+    .module-title {
+      background: #6c5ce7;
+      color: #2d3436;
+    }
+
+    .connection-point {
+      border-color: #6c5ce7;
+
+      &::before {
+        background: #6c5ce7;
+      }
+
+      &:hover {
+        border-color: #a29bfe;
+
+        &::before {
+          background: #a29bfe;
+        }
+      }
+
+      &.connected {
+        border-color: #81ecec;
+
+        &::before {
+          background: #81ecec;
+        }
+      }
+    }
+
+    .module-control {
+      margin: 6px 0;
+
+      label {
+        font-size: 11px;
+        margin-bottom: 1px;
+      }
+
+      input[type="range"] {
+        margin: 2px 0;
+
+        &::-webkit-slider-thumb {
+          background: #6c5ce7;
+        }
+
+        &::-moz-range-thumb {
+          background: #6c5ce7;
+        }
+      }
+
+      select {
+        background: #4a4a4a;
+        border: 1px solid #6c5ce7;
+      }
+    }
+  }
+
+  .module-title {
+    text-align: center;
+    padding: 5px;
+    background: #4a4a4a;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: move;
+    user-select: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .module-control {
+    margin: 8px 0;
+
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 4px 0;
+    }
+
+    select {
+      width: 100%;
+      padding: 4px;
+      background: #4a4a4a;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+  }
+
+  &:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.connection-point {
+  width: 14px;
+  height: 14px;
+  background: #2a2a2a;
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  position: absolute;
+  cursor: crosshair;
+  z-index: 3;
+  transition: all 0.2s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: #007bff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s ease;
+  }
+
+  &.input {
+    left: 0;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  &.output {
+    right: 0;
+    transform: translate(50%, -50%) !important;
+  }
+
+  &:hover {
+    border-color: #4a9eff;
+
+    &::before {
+      background: #4a9eff;
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  &.connected {
+    border-color: #00ff88;
+
+    &::before {
+      background: #00ff88;
+    }
+
+    &:hover {
+      border-color: #66ffc2;
+
+      &::before {
+        background: #66ffc2;
+      }
+    }
+  }
+}
+
+.wire-dragging {
+  cursor: crosshair;
+
+  * {
+    cursor: crosshair;
+  }
+}
+
+.global-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #3a3a3a;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.global-play-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  &:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.wire-reverb {
+  stroke: #00cec9;
+  filter: drop-shadow(0 0 3px rgba(0, 206, 201, 0.5));
+}
+
+.wire-delay {
+  stroke: #fd79a8;
+  filter: drop-shadow(0 0 3px rgba(253, 121, 168, 0.5));
+}
+
+.wire-lfo {
+  stroke: #a8e6cf;
+  filter: drop-shadow(0 0 3px rgba(168, 230, 207, 0.5));
+}
+
+.wire-cutoff {
+  stroke: #6c5ce7;
+  filter: drop-shadow(0 0 3px rgba(108, 92, 231, 0.5));
+}
+
+.piano-keyboard {
+  display: flex;
+  position: relative;
+  width: 200px;
+  height: 100px;
+  background: #f0f0f0;
+  padding: 5px;
+  border-radius: 0 0 5px 5px;
+}
+
+.piano-key {
+  cursor: pointer;
+  border: 1px solid #999;
+  transition: background-color 0.1s;
+
+  &.white-key {
+    background: white;
+    width: 28px;
+    height: 90px;
+    margin: 0 1px;
+    z-index: 1;
+
+    &:active {
+      background: #e0e0e0;
+    }
+  }
+
+  &.black-key {
+    background: #333;
+    width: 20px;
+    height: 60px;
+    margin-left: -10px;
+    margin-right: -10px;
+    z-index: 2;
+    position: absolute;
+
+    &:active {
+      background: #000;
+    }
+  }
+}
+
+// Position black keys
+.piano-key[data-note="C#"] {
+  left: 12%;
+}
+.piano-key[data-note="D#"] {
+  left: 26%;
+}
+.piano-key[data-note="F#"] {
+  left: 55%;
+}
+.piano-key[data-note="G#"] {
+  left: 69%;
+}
+.piano-key[data-note="A#"] {
+  left: 83%;
+}
+
+.module-keyboard {
+  width: 260px !important;
+  height: 180px !important;
+  background: #2d3436;
+  border: 1px solid #74b9ff;
+  position: absolute;
+
+  .module-header {
+    width: 100%;
+  }
+
+  .module-title {
+    background: #74b9ff;
+    color: #2d3436;
+    margin-bottom: 15px;
+    cursor: move;
+    padding: 5px;
+    text-align: center;
+    user-select: none;
+    z-index: 10;
+  }
+
+  .keyboard-container {
+    pointer-events: all;
+    padding: 0 10px;
+  }
+
+  .piano-keyboard {
+    width: 240px;
+    height: 100px;
+    background: #1e272e;
+    padding: 5px;
+    border-radius: 0 0 5px 5px;
+    margin: 0 auto;
+  }
+
+  .white-keys {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .piano-key {
+    cursor: pointer;
+    border: 1px solid #2d3436;
+    transition: background-color 0.1s;
+
+    &.white-key {
+      background: #f5f6fa;
+      flex: 1;
+      height: 100%;
+      margin: 0 1px;
+      border-radius: 0 0 3px 3px;
+
+      &:active {
+        background: #dcdde1;
+      }
+    }
+
+    &.black-key {
+      background: #2d3436;
+      width: 24px;
+      height: 60px;
+      position: absolute;
+      z-index: 2;
+      border-radius: 0 0 2px 2px;
+
+      &:active {
+        background: #000000;
+      }
+    }
+  }
+
+  // Position black keys
+  .piano-key[data-note="C#"] {
+    left: 10.5%;
+  }
+  .piano-key[data-note="D#"] {
+    left: 23%;
+  }
+  .piano-key[data-note="F#"] {
+    left: 48%;
+  }
+  .piano-key[data-note="G#"] {
+    left: 60.5%;
+  }
+  .piano-key[data-note="A#"] {
+    left: 73%;
+  }
+
+  .connection-points {
+    // position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .sustain-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin-bottom: 10px;
+    color: white;
+
+    .sustain-label {
+      margin-right: 8px;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .sustain-checkbox {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// Wire styles with hover effects
+.wire-reverb,
+.wire-delay,
+.wire-lfo,
+.wire-cutoff {
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    stroke: #ff4757 !important; // Red color on hover
+    filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6)) !important; // Red glow
+  }
+}
+
+.module-visualizer {
+  width: 300px !important; // Wider than standard modules
+  height: 160px !important;
+  background: #2d3436;
+  border: 1px solid #74b9ff;
+
+  .module-title {
+    background: #74b9ff;
+    color: #2d3436;
+    margin-bottom: 15px;
+  }
+
+  .visualizer-canvas {
+    background: #2d3436;
+    border-radius: 4px;
+    margin: 0 10px;
+  }
+
+  .connection-point {
+    border-color: #74b9ff;
+
+    &::before {
+      background: #74b9ff;
+    }
+
+    &:hover {
+      border-color: #a0d8ef;
+
+      &::before {
+        background: #a0d8ef;
+      }
+    }
+
+    &.connected {
+      border-color: #00ff88;
+
+      &::before {
+        background: #00ff88;
+      }
+    }
+  }
+}
