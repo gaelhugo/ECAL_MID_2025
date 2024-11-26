@@ -855,32 +855,43 @@ body {
 
 // Slicer module base styles
 .module-slicer {
+  width: 200px !important;
   background: linear-gradient(45deg, #2c3e50, #34495e);
   border: 1px solid #2c3e50;
+  padding-bottom: 10px;
 
-  // Common control styles
-  .module-control {
-    background: rgba(0, 0, 0, 0.2);
-    margin: 8px;
+  .slicer-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
     padding: 8px;
+    margin: 8px;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
-
-    label {
-      color: #bdc3c7;
-    }
+    width: calc(100% - 16px);
+    box-sizing: border-box;
   }
 
-  // Range input styles
-  input[type="range"] {
-    background: #2c3e50;
+  .slicer-step {
+    aspect-ratio: 1;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+  }
 
-    &::-webkit-slider-thumb {
-      background: #3498db;
-    }
+  .module-control {
+    margin: 4px 8px;
+    padding: 4px;
+  }
 
-    &::-moz-range-thumb {
-      background: #3498db;
-    }
+  .slicer-bpm-display {
+    margin: 4px 8px;
+    padding: 4px;
+  }
+
+  .slicer-play-button {
+    margin: 4px 8px;
+    padding: 4px 8px;
   }
 }
 
@@ -928,5 +939,53 @@ body {
 
   &:hover {
     background: #2980b9;
+  }
+}
+
+// Add BPM display container
+.slicer-bpm-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  margin: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+
+  .bpm-label {
+    color: #bdc3c7;
+  }
+
+  .bpm-value {
+    color: #3498db;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+  }
+}
+
+// Update the module control styles for better layout
+.module-slicer {
+  .module-control {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .control-value {
+        color: #3498db;
+        font-weight: bold;
+      }
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
   }
 }

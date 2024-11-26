@@ -5,7 +5,8 @@ export default class SlicerModule extends BaseModule {
     super(context, id, x, y);
     this.title = "Slicer";
     this.type = "slicer";
-    this.height = 280;
+    this.height = 320;
+    this.width = 200;
 
     // Create audio nodes
     this.audioNode = this.audioContext.createGain();
@@ -35,6 +36,9 @@ export default class SlicerModule extends BaseModule {
         label: "Rate (BPM)",
         onChange: (value) => {
           this.bpm = value;
+          if (this.bpmValueDisplay) {
+            this.bpmValueDisplay.textContent = value;
+          }
           if (this.isPlaying) {
             this.restartSequence();
           }
@@ -58,6 +62,18 @@ export default class SlicerModule extends BaseModule {
 
   createDOM() {
     const element = super.createDOM();
+
+    // Add BPM display
+    const bpmDisplay = document.createElement("div");
+    bpmDisplay.className = "slicer-bpm-display";
+    bpmDisplay.innerHTML = `
+      <span class="bpm-label">BPM:</span>
+      <span class="bpm-value">${this.bpm}</span>
+    `;
+    element.appendChild(bpmDisplay);
+
+    // Store reference to BPM value display
+    this.bpmValueDisplay = bpmDisplay.querySelector(".bpm-value");
 
     // Add step sequencer grid
     const grid = document.createElement("div");
