@@ -40,6 +40,7 @@ export default class ConfigurationManager {
     const config = {
       modules: [],
       connections: [],
+      autoplay: true,
     };
 
     // Save modules
@@ -118,6 +119,39 @@ export default class ConfigurationManager {
             this.app.createConnection(fromModule, toModule);
           }
         }
+
+        // If autoplay is true, start everything
+        if (config.autoplay) {
+          setTimeout(() => {
+            // Start main audio first
+            if (!this.app.isPlaying) {
+              this.app.togglePlay();
+            }
+
+            // Additional delay for sequencers and slicers
+            setTimeout(() => {
+              this.app.modules.forEach((module) => {
+                const moduleConfig = config.modules.find(
+                  (m) => m.id === module.id
+                );
+                if (!moduleConfig || !moduleConfig.settings) return;
+
+                if (
+                  (module.constructor.name === "SequencerModule" ||
+                    module.constructor.name === "SlicerModule") &&
+                  moduleConfig.settings.isPlaying
+                ) {
+                  const playButton = module.element.querySelector(
+                    `.${module.type}-play-button`
+                  );
+                  if (playButton && playButton.textContent === "Play") {
+                    playButton.click();
+                  }
+                }
+              });
+            }, 300); // Additional delay for sequencers and slicers
+          }, 200); // Delay for main audio start
+        }
       });
     } catch (error) {
       console.error("Error loading configuration:", error);
@@ -129,19 +163,6 @@ export default class ConfigurationManager {
     const settings = {};
 
     try {
-      // First get all control values from the UI
-      if (module.controls && module.element) {
-        settings.controls = module.controls.map((control, index) => {
-          const input = module.element.querySelector(
-            `input[type="range"]:nth-of-type(${index + 1}), 
-             select:nth-of-type(${index + 1}),
-             input[type="number"]:nth-of-type(${index + 1})`
-          );
-          return input ? input.value : control.value;
-        });
-      }
-
-      // Then get specific module settings
       switch (module.constructor.name) {
         case "SequencerModule":
           // Save sequence data
@@ -151,14 +172,25 @@ export default class ConfigurationManager {
               const select = module.element.querySelector(
                 `.sequencer-step:nth-child(${i + 1}) select`
               );
-              return select ? select.value : "";
+              const noteDisplay = module.element.querySelector(
+                `.sequencer-step:nth-child(${i + 1}) .note-display`
+              );
+              const value = select ? select.value : "";
+
+              // Also update the note display
+              if (noteDisplay) {
+                noteDisplay.textContent = value || "-";
+              }
+
+              return value;
             });
-          settings.bpm = module.bpm;
+          settings.bpm = parseInt(
+            module.element.querySelector('input[type="number"]').value
+          );
           settings.isPlaying = module.isPlaying;
           break;
 
         case "SlicerModule":
-          // Save slicer pattern
           settings.sequence = Array(module.steps)
             .fill(null)
             .map((_, i) => {
@@ -240,96 +272,96 @@ export default class ConfigurationManager {
     if (!settings) return;
 
     try {
-      // First restore all control values
-      if (settings.controls && module.controls && module.element) {
-        settings.controls.forEach((value, index) => {
-          const input = module.element.querySelector(
-            `input[type="range"]:nth-of-type(${index + 1}), 
-             select:nth-of-type(${index + 1}),
-             input[type="number"]:nth-of-type(${index + 1})`
-          );
-          if (input) {
-            input.value = value;
-            // Trigger the change event to update the audio parameters
-            const event = new Event("change");
-            input.dispatchEvent(event);
-
-            // Also trigger input event for sliders to update any visual feedback
-            if (input.type === "range") {
-              const inputEvent = new Event("input");
-              input.dispatchEvent(inputEvent);
-            }
-          }
-        });
-      }
-
-      // Then apply specific module settings
       switch (module.constructor.name) {
         case "SequencerModule":
-          if (settings.sequence) {
-            settings.sequence.forEach((note, index) => {
-              const select = module.element.querySelector(
-                `.sequencer-step:nth-child(${index + 1}) select`
-              );
-              if (select) {
-                select.value = note;
-                // Trigger change event to update visual state
-                const event = new Event("change");
-                select.dispatchEvent(event);
-              }
-            });
-          }
+          // Apply BPM first
           if (settings.bpm) {
             module.bpm = settings.bpm;
             const bpmInput = module.element.querySelector(
               'input[type="number"]'
             );
-            if (bpmInput) bpmInput.value = settings.bpm;
-          }
-          // Restore playing state if it was playing
-          if (settings.isPlaying) {
-            const playButton = module.element.querySelector(
-              ".sequencer-play-button"
-            );
-            if (playButton) {
-              setTimeout(() => playButton.click(), 100); // Small delay to ensure proper initialization
+            if (bpmInput) {
+              bpmInput.value = settings.bpm;
             }
+          }
+
+          // Apply sequence
+          if (settings.sequence) {
+            module.sequence = [...settings.sequence];
+            settings.sequence.forEach((note, index) => {
+              const step = module.element.querySelector(
+                `.sequencer-step:nth-child(${index + 1})`
+              );
+              if (step) {
+                const select = step.querySelector("select");
+                const noteDisplay = step.querySelector(".note-display");
+
+                if (select) {
+                  select.value = note;
+                  // Update visual state
+                  if (note) {
+                    step.classList.add("has-note");
+                  } else {
+                    step.classList.remove("has-note");
+                  }
+                }
+
+                if (noteDisplay) {
+                  noteDisplay.textContent = note || "-";
+                }
+              }
+            });
+          }
+
+          // Store settings for later use
+          module.settings = settings;
+
+          // If it was playing, restart it
+          if (settings.isPlaying) {
+            setTimeout(() => {
+              const playButton = module.element.querySelector(
+                ".sequencer-play-button"
+              );
+              if (playButton && playButton.textContent === "Play") {
+                playButton.click();
+              }
+            }, 100);
           }
           break;
 
         case "SlicerModule":
+          // Store the settings directly on the module for later use
+          module.settings = settings;
+
+          // Apply immediate settings
+          if (settings.bpm) module.bpm = settings.bpm;
+          if (settings.depth) module.depth = settings.depth;
           if (settings.sequence) {
-            settings.sequence.forEach((active, index) => {
-              const step = module.element.querySelector(
-                `.slicer-step:nth-child(${index + 1})`
-              );
-              if (step) {
-                if (active) {
-                  step.classList.add("active");
-                } else {
-                  step.classList.remove("active");
+            module.sequence = [...settings.sequence];
+
+            // Update UI
+            settings.sequence.forEach((value, index) => {
+              if (module.constructor.name === "SequencerModule") {
+                const select = module.element.querySelector(
+                  `.sequencer-step:nth-child(${index + 1}) select`
+                );
+                if (select) {
+                  select.value = value;
+                  select.dispatchEvent(new Event("change"));
                 }
-                module.sequence[index] = active;
+              } else {
+                const step = module.element.querySelector(
+                  `.slicer-step:nth-child(${index + 1})`
+                );
+                if (step) {
+                  if (value) {
+                    step.classList.add("active");
+                  } else {
+                    step.classList.remove("active");
+                  }
+                }
               }
             });
-          }
-          if (settings.bpm) {
-            module.bpm = settings.bpm;
-            // Update BPM display
-            const bpmDisplay = module.element.querySelector(".bpm-value");
-            if (bpmDisplay) bpmDisplay.textContent = settings.bpm;
-          }
-          if (settings.depth) {
-            module.depth = settings.depth;
-          }
-          // Restore playing state if it was playing
-          if (settings.isPlaying) {
-            const playButton = module.element.querySelector(
-              ".slicer-play-button"
-            );
-            if (playButton) {
-              setTimeout(() => playButton.click(), 100);
-            }
           }
           break;
 

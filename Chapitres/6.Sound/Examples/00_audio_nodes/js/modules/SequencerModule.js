@@ -1,20 +1,27 @@
 import BaseModule from "./BaseModule.js";
 
 export default class SequencerModule extends BaseModule {
-  constructor(audioContext, id, x, y) {
-    super(audioContext, id, x, y);
+  constructor(context, id, x, y) {
+    super(context, id, x, y);
     this.title = "Sequencer";
-    this.outputs = ["trigger"];
+    this.type = "sequencer";
+    this.width = 280;
+    this.height = 220;
+
+    // Initialize connectedKeyboards Set
     this.connectedKeyboards = new Set();
 
+    // Initialize sequence
     this.steps = 8;
     this.currentStep = 0;
+    this.sequence = Array(this.steps).fill("");
     this.isPlaying = false;
     this.bpm = 120;
     this.stepInterval = null;
 
-    // Initialize sequence with empty notes
-    this.sequence = Array(this.steps).fill(null);
+    // Only outputs for keyboard control
+    this.outputs = ["trigger"];
+    this.inputs = [];
   }
 
   createDOM() {
@@ -156,23 +163,25 @@ export default class SequencerModule extends BaseModule {
   }
 
   start() {
-    // Don't start the sequencer automatically
-    // Only handle audio context state
+    // Don't start automatically, just handle audio context
     if (this.audioContext.state === "suspended") {
       this.audioContext.resume();
     }
   }
 
   stop() {
-    // Only stop if we're actually playing the sequence
     if (this.isPlaying) {
       this.isPlaying = false;
       if (this.stepInterval) {
         clearInterval(this.stepInterval);
       }
+
       // Clear active step highlighting
       const steps = this.element.querySelectorAll(".sequencer-step");
-      steps.forEach((step) => step.classList.remove("active"));
+      steps.forEach((step) => {
+        step.classList.remove("active");
+        step.classList.remove("playing");
+      });
 
       // Release any playing notes
       this.connectedKeyboards.forEach((keyboard) => {
@@ -233,6 +242,8 @@ export default class SequencerModule extends BaseModule {
   disconnect(module) {
     if (module.constructor.name === "KeyboardModule") {
       this.connectedKeyboards.delete(module);
+      // Stop any playing notes when disconnecting
+      module.handleInput("trigger", null);
     }
   }
 }
