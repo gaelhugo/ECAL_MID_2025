@@ -280,11 +280,24 @@ export default class KeyboardModule extends BaseModule {
       const keys = this.element.querySelectorAll(".piano-key");
       keys.forEach((key) => key.classList.remove("active"));
 
+      // Update note display
+      if (this.noteDisplay) {
+        this.noteDisplay.textContent = value || "-";
+        const noteDisplayContainer = this.noteDisplay.closest(
+          ".keyboard-note-display"
+        );
+        if (noteDisplayContainer) {
+          if (value) {
+            noteDisplayContainer.classList.add("playing");
+          } else {
+            noteDisplayContainer.classList.remove("playing");
+          }
+        }
+      }
+
       if (value) {
         // Note on
         this.playNote(value);
-        // Update note display
-        this.noteDisplay.textContent = value;
 
         // Find and highlight the specific key
         const keyToHighlight = this.element.querySelector(
@@ -297,8 +310,18 @@ export default class KeyboardModule extends BaseModule {
         // Note off
         if (!this.sustain) {
           this.stopAllNotes();
-          // Clear note display
-          this.noteDisplay.textContent = "-";
+          // Remove all key highlights
+          keys.forEach((key) => key.classList.remove("active"));
+          // Reset note display
+          if (this.noteDisplay) {
+            this.noteDisplay.textContent = "-";
+            const noteDisplayContainer = this.noteDisplay.closest(
+              ".keyboard-note-display"
+            );
+            if (noteDisplayContainer) {
+              noteDisplayContainer.classList.remove("playing");
+            }
+          }
         }
       }
     }
@@ -315,6 +338,51 @@ export default class KeyboardModule extends BaseModule {
           key.classList.add("active");
         } else {
           key.classList.remove("active");
+        }
+      }
+    });
+  }
+
+  // Add this method to handle frequency-adjusted notes:
+  playNoteWithFrequency(note, frequency) {
+    // First update visual feedback
+    const keys = this.element.querySelectorAll(".piano-key");
+    keys.forEach((key) => key.classList.remove("active"));
+
+    const keyToHighlight = this.element.querySelector(
+      `.piano-key[data-note="${note}"]`
+    );
+    if (keyToHighlight) {
+      keyToHighlight.classList.add("active");
+    }
+
+    // Update note display
+    if (this.noteDisplay) {
+      this.noteDisplay.textContent = note;
+      const noteDisplayContainer = this.noteDisplay.closest(
+        ".keyboard-note-display"
+      );
+      if (noteDisplayContainer) {
+        noteDisplayContainer.classList.add("playing");
+      }
+    }
+
+    // Then handle the audio
+    this.connectedOscillators.forEach((oscillator) => {
+      if (oscillator.audioNode && oscillator.audioNode.frequency) {
+        oscillator.audioNode.frequency.setValueAtTime(
+          frequency,
+          this.audioContext.currentTime
+        );
+
+        // Update the frequency slider
+        const frequencySlider = oscillator.element.querySelector(
+          'input[type="range"]'
+        );
+        if (frequencySlider) {
+          frequencySlider.value = frequency;
+          const event = new Event("input", { bubbles: true });
+          frequencySlider.dispatchEvent(event);
         }
       }
     });

@@ -63,17 +63,49 @@ export default class SlicerModule extends BaseModule {
   createDOM() {
     const element = super.createDOM();
 
-    // Add BPM display
+    // Create controls container
+    const controls = document.createElement("div");
+    controls.className = "slicer-controls";
+
+    // Add BPM control group
+    const bpmControl = document.createElement("div");
+    bpmControl.className = "control-group";
+
+    const bpmLabel = document.createElement("label");
+    bpmLabel.textContent = "BPM";
+
     const bpmDisplay = document.createElement("div");
-    bpmDisplay.className = "slicer-bpm-display";
-    bpmDisplay.innerHTML = `
-      <span class="bpm-label">BPM:</span>
-      <span class="bpm-value">${this.bpm}</span>
-    `;
-    element.appendChild(bpmDisplay);
+    bpmDisplay.className = "bpm-value";
+    bpmDisplay.textContent = this.bpm;
+
+    bpmControl.appendChild(bpmLabel);
+    bpmControl.appendChild(bpmDisplay);
+
+    // Add play button
+    const playButton = document.createElement("button");
+    playButton.className = "slicer-play-button";
+    playButton.textContent = "Play";
+    playButton.addEventListener("click", () => {
+      if (this.isPlaying) {
+        this.stop();
+        playButton.textContent = "Play";
+      } else {
+        if (this.audioContext.state === "running") {
+          this.isPlaying = true;
+          this.currentStep = 0;
+          this.scheduleSteps();
+          playButton.textContent = "Stop";
+        }
+      }
+    });
+
+    // Add controls in order
+    controls.appendChild(bpmControl);
+    controls.appendChild(playButton);
+    element.appendChild(controls);
 
     // Store reference to BPM value display
-    this.bpmValueDisplay = bpmDisplay.querySelector(".bpm-value");
+    this.bpmValueDisplay = bpmDisplay;
 
     // Add step sequencer grid
     const grid = document.createElement("div");
@@ -94,25 +126,6 @@ export default class SlicerModule extends BaseModule {
       grid.appendChild(step);
     }
 
-    // Add play button
-    const playButton = document.createElement("button");
-    playButton.className = "slicer-play-button";
-    playButton.textContent = "Play";
-    playButton.addEventListener("click", () => {
-      if (this.isPlaying) {
-        this.stop();
-        playButton.textContent = "Play";
-      } else {
-        if (this.audioContext.state === "running") {
-          this.isPlaying = true;
-          this.currentStep = 0;
-          this.scheduleSteps();
-          playButton.textContent = "Stop";
-        }
-      }
-    });
-
-    element.appendChild(playButton);
     element.appendChild(grid);
     return element;
   }

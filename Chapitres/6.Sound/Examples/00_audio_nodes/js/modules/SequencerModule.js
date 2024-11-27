@@ -5,8 +5,8 @@ export default class SequencerModule extends BaseModule {
     super(context, id, x, y);
     this.title = "Sequencer";
     this.type = "sequencer";
-    this.width = 280;
-    this.height = 220;
+    this.width = 260;
+    this.height = 280;
 
     // Initialize connectedKeyboards Set
     this.connectedKeyboards = new Set();
@@ -22,6 +22,9 @@ export default class SequencerModule extends BaseModule {
     // Only outputs for keyboard control
     this.outputs = ["trigger"];
     this.inputs = [];
+
+    // Add octave tracking for each step
+    this.octaves = Array(this.steps).fill(4); // Default to octave 4
   }
 
   createDOM() {
@@ -99,6 +102,45 @@ export default class SequencerModule extends BaseModule {
       noteDisplay.className = "note-display";
       noteDisplay.textContent = "-";
       step.appendChild(noteDisplay);
+
+      // Add octave controls container
+      const octaveControl = document.createElement("div");
+      octaveControl.className = "octave-control";
+
+      // Add octave display
+      const octaveDisplay = document.createElement("div");
+      octaveDisplay.className = "octave-display";
+      octaveDisplay.textContent = this.octaves[i];
+
+      // Add up/down buttons
+      const upButton = document.createElement("button");
+      upButton.className = "octave-button up";
+      upButton.textContent = "↑";
+      upButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (this.octaves[i] < 8) {
+          // Maximum octave
+          this.octaves[i]++;
+          octaveDisplay.textContent = this.octaves[i];
+        }
+      });
+
+      const downButton = document.createElement("button");
+      downButton.className = "octave-button down";
+      downButton.textContent = "↓";
+      downButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (this.octaves[i] > 0) {
+          // Minimum octave
+          this.octaves[i]--;
+          octaveDisplay.textContent = this.octaves[i];
+        }
+      });
+
+      octaveControl.appendChild(upButton);
+      octaveControl.appendChild(octaveDisplay);
+      octaveControl.appendChild(downButton);
+      step.appendChild(octaveControl);
 
       const noteSelect = document.createElement("select");
       noteSelect.className = "note-select";
@@ -181,6 +223,11 @@ export default class SequencerModule extends BaseModule {
       steps.forEach((step) => {
         step.classList.remove("active");
         step.classList.remove("playing");
+        // Clear note display playing state
+        const noteDisplay = step.querySelector(".note-display");
+        if (noteDisplay) {
+          noteDisplay.classList.remove("playing");
+        }
       });
 
       // Release any playing notes
@@ -223,9 +270,23 @@ export default class SequencerModule extends BaseModule {
       const note = this.sequence[this.currentStep];
       if (note) {
         this.connectedKeyboards.forEach((keyboard) => {
-          keyboard.handleInput("trigger", note);
+          // Calculate the frequency with octave shift
+          const baseFreq = keyboard.frequencies[note];
+          const octaveShift = this.octaves[this.currentStep] - 4; // Relative to octave 4
+          const adjustedFreq = baseFreq * Math.pow(2, octaveShift);
+
+          // Play the note with adjusted frequency
+          keyboard.playNoteWithFrequency(note, adjustedFreq);
         });
         steps[this.currentStep].classList.add("playing");
+
+        // Update the note display for the current step
+        const noteDisplay =
+          steps[this.currentStep].querySelector(".note-display");
+        if (noteDisplay) {
+          noteDisplay.textContent = note;
+          noteDisplay.classList.add("playing");
+        }
       }
 
       // Move to next step
