@@ -4,6 +4,7 @@ body {
   background: #2a2a2a;
   overflow: hidden;
   font-family: sans-serif;
+  user-select: none;
 }
 
 .node-canvas {
@@ -495,7 +496,7 @@ body {
 
 .module-keyboard {
   width: 260px !important;
-  height: 180px !important;
+  height: 205px !important;
   background: #2d3436;
   border: 1px solid #74b9ff;
   position: absolute;

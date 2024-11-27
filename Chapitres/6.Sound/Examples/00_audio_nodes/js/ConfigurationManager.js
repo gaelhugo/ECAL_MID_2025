@@ -2,6 +2,14 @@ export default class ConfigurationManager {
   constructor(app) {
     this.app = app;
     this.createUI();
+    this.debug();
+  }
+
+  debug() {
+    console.log("ConfigurationManager");
+    this.app.modules.forEach((module) => {
+      console.log("Module name:", module.constructor.name);
+    });
   }
 
   createUI() {
@@ -199,44 +207,90 @@ export default class ConfigurationManager {
               );
               return step && step.classList.contains("active") ? 1 : 0;
             });
-          settings.bpm = module.bpm;
-          settings.depth = module.depth;
+          //   settings.bpm = module.bpm;
+          //   settings.depth = module.depth;
+          if (module.audioNode) {
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              settings[
+                slider.previousElementSibling.textContent.toLowerCase()
+              ] = parseFloat(slider.value);
+            });
+          }
+
           settings.isPlaying = module.isPlaying;
           break;
 
         case "OscillatorModule":
           if (module.audioNode) {
             settings.waveform = module.audioNode.type;
-            if (module.audioNode.frequency) {
-              settings.frequency = module.audioNode.frequency.value;
-            }
+            // if (module.audioNode.frequency) {
+            //   settings.frequency = module.audioNode.frequency.value;
+            // }
+            // check slider value for each available slider
+            // use the label text to name the slider
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              settings[
+                slider.previousElementSibling.textContent.toLowerCase()
+              ] = parseFloat(slider.value);
+            });
           }
           break;
 
         case "GainModule":
-          if (module.audioNode && module.audioNode.gain) {
-            settings.gain = module.audioNode.gain.value;
-          }
+          //   if (module.audioNode && module.audioNode.gain) {
+          //     settings.gain = module.audioNode.gain.value;
+          //   }
+          const sliders = module.element.querySelectorAll(
+            ".module-control input[type='range']"
+          );
+          sliders.forEach((slider) => {
+            settings[slider.previousElementSibling.textContent.toLowerCase()] =
+              parseFloat(slider.value);
+          });
           break;
 
         case "LFOModule":
           if (module.audioNode) {
             settings.waveform = module.audioNode.type;
-            if (module.audioNode.frequency) {
-              settings.rate = module.audioNode.frequency.value;
-            }
+            // if (module.audioNode.frequency) {
+            //   settings.rate = module.audioNode.frequency.value;
+            // }
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              settings[
+                slider.previousElementSibling.textContent.toLowerCase()
+              ] = parseFloat(slider.value);
+            });
           }
-          if (module.gainNode && module.gainNode.gain) {
-            settings.depth = module.gainNode.gain.value;
-          }
+          //   if (module.gainNode && module.gainNode.gain) {
+          //     settings.depth = module.gainNode.gain.value;
+          //   }
           break;
 
         case "DelayModule":
-          if (module.audioNode && module.audioNode.delayTime) {
-            settings.time = module.audioNode.delayTime.value;
-          }
-          if (module.feedbackGain && module.feedbackGain.gain) {
-            settings.feedback = module.feedbackGain.gain.value;
+          //   if (module.audioNode && module.audioNode.delayTime) {
+          //     settings.time = module.audioNode.delayTime.value;
+          //   }
+          //   if (module.feedbackGain && module.feedbackGain.gain) {
+          //     settings.feedback = module.feedbackGain.gain.value;
+          //   }
+          if (module.audioNode) {
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              settings[
+                slider.previousElementSibling.textContent.toLowerCase()
+              ] = parseFloat(slider.value);
+            });
           }
           break;
 
@@ -245,9 +299,19 @@ export default class ConfigurationManager {
           break;
 
         case "ReverbModule":
+          //   if (module.audioNode) {
+          //     settings.mix = module.mix;
+          //     settings.decay = module.decay;
+          //   }
           if (module.audioNode) {
-            settings.mix = module.mix;
-            settings.decay = module.decay;
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              settings[
+                slider.previousElementSibling.textContent.toLowerCase()
+              ] = parseFloat(slider.value);
+            });
           }
           break;
 
@@ -334,7 +398,12 @@ export default class ConfigurationManager {
           module.settings = settings;
 
           // Apply immediate settings
-          if (settings.bpm) module.bpm = settings.bpm;
+          if (settings["rate (bpm)"]) {
+            module.bpm = settings["rate (bpm)"];
+            console.log(module.element.querySelector(".bpm-value"));
+            module.element.querySelector(".bpm-value").textContent =
+              settings["rate (bpm)"];
+          }
           if (settings.depth) module.depth = settings.depth;
           if (settings.sequence) {
             module.sequence = [...settings.sequence];
@@ -363,16 +432,45 @@ export default class ConfigurationManager {
               }
             });
           }
+          if (settings) {
+            //update all sliders
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              slider.value =
+                settings[
+                  slider.previousElementSibling.textContent.toLowerCase()
+                ];
+            });
+          }
           break;
 
         case "OscillatorModule":
-          if (settings.waveform) module.audioNode.type = settings.waveform;
+          if (settings.waveform) {
+            module.audioNode.type = settings.waveform;
+            // update waveform selector
+            const _selector = module.element.querySelector(
+              ".module-control select"
+            );
+            if (_selector) {
+              _selector.value = settings.waveform;
+            }
+          }
           if (settings.frequency) {
             module.audioNode.frequency.setValueAtTime(
               settings.frequency,
               module.audioContext.currentTime
             );
+            // update slider position
+            const slider = module.element.querySelector(
+              ".module-control input[type='range']"
+            );
+            if (slider) {
+              slider.value = settings.frequency;
+            }
           }
+
           break;
 
         case "GainModule":
@@ -381,11 +479,32 @@ export default class ConfigurationManager {
               settings.gain,
               module.audioContext.currentTime
             );
+            // update slider position
+            const slider = module.element.querySelector(
+              ".module-control input[type='range']"
+            );
+            if (slider) {
+              slider.value = settings.gain;
+            }
           }
+
           break;
 
         case "LFOModule":
-          if (settings.waveform) module.audioNode.type = settings.waveform;
+          if (settings.waveform) {
+            console.log("default value", module.audioNode.type);
+            setTimeout(() => {
+              module.audioNode.type = settings.waveform;
+              console.log("after value", settings.waveform);
+            }, 250);
+            //set selector
+            const _selector = module.element.querySelector(
+              ".module-control select"
+            );
+            if (_selector) {
+              _selector.value = settings.waveform;
+            }
+          }
           if (settings.rate) {
             module.audioNode.frequency.setValueAtTime(
               settings.rate,
@@ -398,6 +517,18 @@ export default class ConfigurationManager {
               module.audioContext.currentTime
             );
           }
+          if (settings) {
+            //update all sliders
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              slider.value =
+                settings[
+                  slider.previousElementSibling.textContent.toLowerCase()
+                ];
+            });
+          }
           break;
 
         case "DelayModule":
@@ -408,10 +539,22 @@ export default class ConfigurationManager {
             );
           }
           if (settings.feedback) {
-            module.feedbackGain.gain.setValueAtTime(
+            module.feedbackNode.gain.setValueAtTime(
               settings.feedback,
               module.audioContext.currentTime
             );
+          }
+          if (settings) {
+            //update all sliders
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              slider.value =
+                settings[
+                  slider.previousElementSibling.textContent.toLowerCase()
+                ];
+            });
           }
           break;
 
@@ -433,6 +576,18 @@ export default class ConfigurationManager {
         case "ReverbModule":
           if (settings.mix) module.mix = settings.mix;
           if (settings.decay) module.decay = settings.decay;
+          if (settings) {
+            //update all sliders
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              slider.value =
+                settings[
+                  slider.previousElementSibling.textContent.toLowerCase()
+                ];
+            });
+          }
           break;
 
         case "SoundwaveVisualizerModule":

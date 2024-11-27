@@ -7,9 +7,13 @@ export default class KeyboardModule extends BaseModule {
     this.inputs = ["trigger"];
     this.outputs = ["frequency"];
     this.connectedOscillators = new Set();
-    this.sustain = true; // Default to sustain mode
+    this.sustain = true;
+
+    this.width = 400;
+    this.height = 220;
+
     this.frequencies = {
-      C: 261.63, // C4
+      C: 261.63,
       "C#": 277.18,
       D: 293.66,
       "D#": 311.13,
@@ -18,10 +22,10 @@ export default class KeyboardModule extends BaseModule {
       "F#": 369.99,
       G: 392.0,
       "G#": 415.3,
-      A: 440.0, // A4
+      A: 440.0,
       "A#": 466.16,
       B: 493.88,
-      C5: 523.25, // C5
+      C5: 523.25,
     };
   }
 
