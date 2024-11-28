@@ -261,7 +261,12 @@ export default class SequencerModule extends BaseModule {
       const previousNote = this.sequence[previousStep];
       if (previousNote) {
         this.connectedKeyboards.forEach((keyboard) => {
+          // Send note-off to keyboard
           keyboard.handleInput("trigger", null);
+          // Also directly stop any connected samplers
+          keyboard.connectedSamplers?.forEach((sampler) => {
+            sampler.handleInput("trigger", null);
+          });
         });
         steps[previousStep].classList.remove("playing");
       }
@@ -275,8 +280,13 @@ export default class SequencerModule extends BaseModule {
           const octaveShift = this.octaves[this.currentStep] - 4; // Relative to octave 4
           const adjustedFreq = baseFreq * Math.pow(2, octaveShift);
 
-          // Play the note with adjusted frequency
+          // Play the note with adjusted frequency for oscillators
           keyboard.playNoteWithFrequency(note, adjustedFreq);
+
+          // Also trigger samplers with the octave shift
+          keyboard.connectedSamplers?.forEach((sampler) => {
+            sampler.handleInput("trigger", note, octaveShift); // Pass octaveShift as third parameter
+          });
         });
         steps[this.currentStep].classList.add("playing");
 

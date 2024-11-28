@@ -1258,3 +1258,100 @@ body {
     }
   }
 }
+
+.module-sampler {
+  background: linear-gradient(45deg, #6c5b7b, #355c7d);
+  border: 1px solid #6c5b7b;
+
+  .module-title {
+    background: #6c5b7b;
+    color: white;
+  }
+
+  .sampler-file-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sampler-load-button {
+    padding: 8px 16px;
+    background: #c06c84;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover {
+      background: #f67280;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  .sampler-display {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #f8b195;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .connection-point {
+    border-color: #c06c84;
+
+    &::before {
+      background: #c06c84;
+    }
+
+    &:hover {
+      border-color: #f67280;
+
+      &::before {
+        background: #f67280;
+      }
+    }
+
+    &.connected {
+      border-color: #f8b195;
+
+      &::before {
+        background: #f8b195;
+      }
+    }
+  }
+
+  .module-control {
+    input[type="range"] {
+      &::-webkit-slider-thumb {
+        background: #c06c84;
+      }
+
+      &::-moz-range-thumb {
+        background: #c06c84;
+      }
+
+      &:hover {
+        &::-webkit-slider-thumb {
+          background: #f67280;
+        }
+
+        &::-moz-range-thumb {
+          background: #f67280;
+        }
+      }
+    }
+  }
+}

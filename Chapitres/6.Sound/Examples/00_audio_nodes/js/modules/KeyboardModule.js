@@ -7,6 +7,7 @@ export default class KeyboardModule extends BaseModule {
     this.inputs = ["trigger"];
     this.outputs = ["frequency"];
     this.connectedOscillators = new Set();
+    this.connectedSamplers = new Set();
     this.sustain = true;
 
     this.width = 400;
@@ -187,6 +188,7 @@ export default class KeyboardModule extends BaseModule {
   }
 
   playNote(note) {
+    // Handle oscillators
     const frequency = this.frequencies[note];
     this.connectedOscillators.forEach((oscillator) => {
       if (oscillator.audioNode && oscillator.audioNode.frequency) {
@@ -206,9 +208,17 @@ export default class KeyboardModule extends BaseModule {
         }
       }
     });
+
+    // Handle samplers
+    if (this.connectedSamplers) {
+      this.connectedSamplers.forEach((sampler) => {
+        sampler.handleInput("trigger", note);
+      });
+    }
   }
 
   stopAllNotes() {
+    // Stop oscillators
     this.connectedOscillators.forEach((oscillator) => {
       if (oscillator.audioNode && oscillator.audioNode.frequency) {
         oscillator.audioNode.frequency.setValueAtTime(
@@ -217,6 +227,13 @@ export default class KeyboardModule extends BaseModule {
         );
       }
     });
+
+    // Stop samplers
+    if (this.connectedSamplers) {
+      this.connectedSamplers.forEach((sampler) => {
+        sampler.handleInput("trigger", null);
+      });
+    }
 
     // Clear all key highlights
     if (this.element) {
@@ -249,12 +266,19 @@ export default class KeyboardModule extends BaseModule {
           frequencySlider.dispatchEvent(event);
         }
       }
+    } else if (module.constructor.name === "SamplerModule") {
+      this.connectedSamplers = this.connectedSamplers || new Set();
+      this.connectedSamplers.add(module);
     }
   }
 
   disconnect(module) {
     if (module.constructor.name === "OscillatorModule") {
       this.connectedOscillators.delete(module);
+    } else if (module.constructor.name === "SamplerModule") {
+      if (this.connectedSamplers) {
+        this.connectedSamplers.delete(module);
+      }
     }
   }
 
@@ -297,7 +321,32 @@ export default class KeyboardModule extends BaseModule {
 
       if (value) {
         // Note on
-        this.playNote(value);
+        const frequency = this.frequencies[value];
+
+        // Handle oscillators
+        this.connectedOscillators.forEach((oscillator) => {
+          if (oscillator.audioNode && oscillator.audioNode.frequency) {
+            oscillator.audioNode.frequency.setValueAtTime(
+              frequency,
+              this.audioContext.currentTime
+            );
+
+            // Update the frequency slider
+            const frequencySlider = oscillator.element.querySelector(
+              'input[type="range"]'
+            );
+            if (frequencySlider) {
+              frequencySlider.value = frequency;
+              const event = new Event("input", { bubbles: true });
+              frequencySlider.dispatchEvent(event);
+            }
+          }
+        });
+
+        // Handle samplers
+        this.connectedSamplers.forEach((sampler) => {
+          sampler.handleInput("trigger", value);
+        });
 
         // Find and highlight the specific key
         const keyToHighlight = this.element.querySelector(
@@ -309,7 +358,21 @@ export default class KeyboardModule extends BaseModule {
       } else {
         // Note off
         if (!this.sustain) {
-          this.stopAllNotes();
+          // Stop oscillators
+          this.connectedOscillators.forEach((oscillator) => {
+            if (oscillator.audioNode && oscillator.audioNode.frequency) {
+              oscillator.audioNode.frequency.setValueAtTime(
+                0,
+                this.audioContext.currentTime
+              );
+            }
+          });
+
+          // Stop samplers
+          this.connectedSamplers.forEach((sampler) => {
+            sampler.handleInput("trigger", null);
+          });
+
           // Remove all key highlights
           keys.forEach((key) => key.classList.remove("active"));
           // Reset note display

@@ -321,6 +321,25 @@ export default class ConfigurationManager {
             .replace("Module", "")
             .toLowerCase();
           break;
+
+        case "SamplerModule":
+          if (module) {
+            // Get all control values
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              const label =
+                slider.previousElementSibling.textContent.toLowerCase();
+              settings[label] = parseFloat(slider.value);
+            });
+
+            // Store specific sampler properties
+            settings.startPosition = module.startPosition || 0;
+            settings.playbackRate = module.playbackRate || 1;
+            settings.volume = module.audioNode.gain.value || 1;
+          }
+          break;
       }
     } catch (error) {
       console.warn(
@@ -594,6 +613,39 @@ export default class ConfigurationManager {
         case "SpectrumVisualizerModule":
           if (module.startAnimation) {
             module.startAnimation();
+          }
+          break;
+
+        case "SamplerModule":
+          if (settings) {
+            // Update all sliders and their corresponding values
+            const sliders = module.element.querySelectorAll(
+              ".module-control input[type='range']"
+            );
+            sliders.forEach((slider) => {
+              const label =
+                slider.previousElementSibling.textContent.toLowerCase();
+              if (settings[label] !== undefined) {
+                slider.value = settings[label];
+                // Trigger both input and change events
+                slider.dispatchEvent(new Event("input"));
+                slider.dispatchEvent(new Event("change"));
+              }
+            });
+
+            // Apply specific sampler properties
+            if (settings.startPosition !== undefined) {
+              module.startPosition = settings.startPosition;
+            }
+            if (settings.playbackRate !== undefined) {
+              module.playbackRate = settings.playbackRate;
+            }
+            if (settings.volume !== undefined) {
+              module.audioNode.gain.setValueAtTime(
+                settings.volume,
+                module.audioContext.currentTime
+              );
+            }
           }
           break;
       }
