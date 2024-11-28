@@ -11,6 +11,7 @@ import SlicerModule from "./modules/SlicerModule.js";
 import SpectrumVisualizerModule from "./modules/SpectrumVisualizerModule.js";
 import ConfigurationManager from "./ConfigurationManager.js";
 import SamplerModule from "./modules/SamplerModule.js";
+import CustomVisualizerModule from "./modules/CustomVisualizerModule.js";
 
 export default class App {
   constructor() {
@@ -84,6 +85,11 @@ export default class App {
     this.createModule("slicer", leftMargin + 900, 100 + verticalSpacing * 2);
     this.createModule("spectrum", leftMargin + 600, 100 + verticalSpacing);
     this.createModule("sampler", leftMargin + 900, 100 + verticalSpacing * 2);
+    this.createModule(
+      "customvisualizer",
+      leftMargin + 600,
+      100 + verticalSpacing * 2
+    );
   }
 
   createModule(type, x, y, existingId = null) {
@@ -126,6 +132,9 @@ export default class App {
         break;
       case "sampler":
         module = new SamplerModule(this.audioContext, id, x, y);
+        break;
+      case "customvisualizer":
+        module = new CustomVisualizerModule(this.audioContext, id, x, y);
         break;
     }
 
