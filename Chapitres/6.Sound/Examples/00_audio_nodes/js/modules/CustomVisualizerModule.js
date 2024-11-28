@@ -10,9 +10,12 @@ export default class CustomVisualizerModule extends BaseModule {
 
     // Create analyzer node
     this.audioNode = this.audioContext.createAnalyser();
-    this.audioNode.fftSize = 2048;
+    this.audioNode.fftSize = 256;
     this.bufferLength = this.audioNode.frequencyBinCount;
-    this.dataArray = new Uint8Array(this.bufferLength);
+    // this.dataArray = new Uint8Array(this.bufferLength);
+    this.dataFrequency = new Uint8Array(this.bufferLength);
+    this.dataFloatFrequency = new Float32Array(this.bufferLength);
+    this.dataWave = new Uint8Array(this.bufferLength);
 
     this.inputs = ["audio"];
     this.outputs = [];
@@ -29,8 +32,8 @@ export default class CustomVisualizerModule extends BaseModule {
     return `// Available variables:
 // ctx - Canvas 2D context
 // width, height - Canvas dimensions
-// dataArray - Uint8Array with frequency data
-// bufferLength - Length of dataArray
+// dataWave - Uint8Array with frequency data
+// bufferLength - Length of dataWave
 // time - Current time in seconds
 // deltaTime - Time since last frame in seconds
 
@@ -44,7 +47,7 @@ const heightScale = height / 256;
 ctx.fillStyle = \`hsl(\${time * 50 % 360}, 70%, 60%)\`;
 
 for (let i = 0; i < bufferLength; i++) {
-  const value = dataArray[i];
+  const value = dataWave[i];
   const x = i * barWidth;
   const barHeight = value * heightScale;
   
@@ -122,7 +125,9 @@ for (let i = 0; i < bufferLength; i++) {
         "ctx",
         "width",
         "height",
-        "dataArray",
+        "dataWave",
+        "dataFrequency",
+        "dataFloatFrequency",
         "bufferLength",
         "time",
         "deltaTime",
@@ -158,8 +163,9 @@ for (let i = 0; i < bufferLength; i++) {
     const time = currentTime / 1000; // Convert to seconds
 
     // Get frequency data
-    // this.audioNode.getByteFrequencyData(this.dataArray);
-    this.audioNode.getByteTimeDomainData(this.dataArray);
+    this.audioNode.getByteFrequencyData(this.dataFrequency);
+    this.audioNode.getByteTimeDomainData(this.dataWave);
+    this.audioNode.getFloatFrequencyData(this.dataFloatFrequency);
 
     try {
       if (this.userDrawFunction) {
@@ -167,7 +173,9 @@ for (let i = 0; i < bufferLength; i++) {
           this.ctx,
           this.canvas.width,
           this.canvas.height,
-          this.dataArray,
+          this.dataWave,
+          this.dataFrequency,
+          this.dataFloatFrequency,
           this.bufferLength,
           time,
           deltaTime
