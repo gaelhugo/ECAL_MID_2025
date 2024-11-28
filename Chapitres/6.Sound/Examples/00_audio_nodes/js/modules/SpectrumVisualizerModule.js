@@ -29,10 +29,30 @@ export default class SpectrumVisualizerModule extends BaseModule {
     this.lastTime = 0;
     this.peaks = new Array(this.bufferLength).fill(0);
     this.peakDecay = 0.98; // How fast peaks fall
+
+    // Add fullscreen change listener
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        // Reset canvas size when exiting fullscreen
+        this.canvas.width = 240;
+        this.canvas.height = 140;
+        this.canvas.classList.remove("fullscreen");
+      }
+    });
   }
 
   createDOM() {
     const element = super.createDOM();
+
+    // Create container for canvas and controls
+    const container = document.createElement("div");
+    container.className = "spectrum-container";
+
+    // Create fullscreen button
+    const fullscreenButton = document.createElement("button");
+    fullscreenButton.className = "spectrum-fullscreen-button";
+    fullscreenButton.textContent = "⛶"; // Unicode fullscreen symbol
+    fullscreenButton.addEventListener("click", () => this.toggleFullscreen());
 
     this.canvas = document.createElement("canvas");
     this.canvas.className = "spectrum-canvas";
@@ -40,7 +60,10 @@ export default class SpectrumVisualizerModule extends BaseModule {
     this.canvas.height = 140;
     this.ctx = this.canvas.getContext("2d");
 
-    element.appendChild(this.canvas);
+    container.appendChild(this.canvas);
+    container.appendChild(fullscreenButton);
+    element.appendChild(container);
+
     this.startAnimation();
 
     return element;
@@ -65,63 +88,77 @@ export default class SpectrumVisualizerModule extends BaseModule {
     const deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
 
-    this.audioNode.getByteFrequencyData(this.dataArray);
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // Use requestAnimationFrame at the start to optimize frame timing
+    requestAnimationFrame(() => this.animate());
 
-    // Background with subtle gradient
-    const bgGradient = this.ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      this.canvas.height
-    );
+    // Get frequency data
+    this.audioNode.getByteFrequencyData(this.dataArray);
+
+    // Calculate scale factor only once per frame
+    const isFullscreen = !!document.fullscreenElement;
+    const scaleFactor = isFullscreen
+      ? Math.min(window.innerWidth / 240, window.innerHeight / 140)
+      : 1;
+
+    // Pre-calculate common values
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const maxRadius = Math.min(width, height) * 0.4;
+    const barCount = Math.floor(this.bufferLength / 8);
+    const angleStep = ((Math.PI * 2) / barCount) * 2;
+
+    // Clear and draw background
+    this.ctx.clearRect(0, 0, width, height);
+    const bgGradient = this.ctx.createLinearGradient(0, 0, 0, height);
     bgGradient.addColorStop(0, "rgba(10, 10, 15, 0.95)");
     bgGradient.addColorStop(1, "rgba(15, 15, 25, 0.95)");
     this.ctx.fillStyle = bgGradient;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, width, height);
 
-    // Add subtle grid
-    this.drawGrid();
+    // Draw grid with reduced opacity in fullscreen
+    if (!isFullscreen) {
+      this.drawGrid();
+    }
 
-    // Center point
-    const centerX = this.canvas.width / 2;
-    const centerY = this.canvas.height / 2;
+    // Pre-calculate bar width and minimum height
+    const barWidth = 4 * scaleFactor;
+    const minHeight = 2 * scaleFactor;
+    const barRadius = 2 * scaleFactor;
 
-    // Spiral parameters
-    const maxRadius = Math.min(this.canvas.width, this.canvas.height) * 0.4;
-    const spiralSpacing = 4; // Space between spiral rings
-    const barCount = this.bufferLength / 8; // Reduce number of bars for smoother spiral
-    const angleStep = ((Math.PI * 2) / barCount) * 2; // Two full rotations
+    // Create off-screen canvas for bars
+    const barCanvas = document.createElement("canvas");
+    barCanvas.width = width;
+    barCanvas.height = height;
+    const barCtx = barCanvas.getContext("2d");
 
-    // Draw bars in spiral
+    // Draw bars
     for (let i = 0; i < barCount; i++) {
-      // Use logarithmic scale for frequency distribution
       const index = Math.floor(Math.pow(i / barCount, 1.8) * this.bufferLength);
       const value = this.dataArray[index];
       const percent = value / 256;
 
-      // Calculate spiral position
-      const angle = i * angleStep + (this.hue * Math.PI) / 180; // Use hue for rotation
+      // Calculate position
+      const angle = i * angleStep + (this.hue * Math.PI) / 180;
       const radius = (i / barCount) * maxRadius;
       const x = centerX + Math.cos(angle) * radius;
       const y = centerY + Math.sin(angle) * radius;
 
-      // Calculate bar height
-      const minHeight = 2;
-      const height = Math.max(minHeight, 100 * percent);
+      // Calculate height
+      const height = Math.max(minHeight, 100 * percent * scaleFactor);
 
-      // Calculate hue based on frequency and intensity
+      // Calculate color
       const hue = (this.hue + (i / barCount) * 360) % 360;
       const saturation = 80 + percent * 20;
       const lightness = 40 + percent * 20;
 
       // Draw bar
-      this.ctx.save();
-      this.ctx.translate(x, y);
-      this.ctx.rotate(angle + Math.PI / 2);
+      barCtx.save();
+      barCtx.translate(x, y);
+      barCtx.rotate(angle + Math.PI / 2);
 
-      // Create gradient for bar
-      const gradient = this.ctx.createLinearGradient(0, 0, 0, height);
+      const gradient = barCtx.createLinearGradient(0, 0, 0, height);
       gradient.addColorStop(
         0,
         `hsla(${hue}, ${saturation}%, ${lightness}%, 0.9)`
@@ -131,46 +168,39 @@ export default class SpectrumVisualizerModule extends BaseModule {
         `hsla(${hue}, ${saturation}%, ${lightness * 0.6}%, 0.9)`
       );
 
-      // Draw the bar
-      this.ctx.beginPath();
-      this.roundedRect(-2, 0, 4, height, 2);
-      this.ctx.fillStyle = gradient;
+      barCtx.beginPath();
+      this.roundedRect(-barWidth / 2, 0, barWidth, height, barRadius);
+      barCtx.fillStyle = gradient;
 
-      // Add glow effect based on intensity
       if (percent > 0.5) {
-        this.ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`;
-        this.ctx.shadowBlur = 10;
+        barCtx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`;
+        barCtx.shadowBlur = 10 * scaleFactor;
       }
 
-      this.ctx.fill();
-      this.ctx.restore();
+      barCtx.fill();
+      barCtx.restore();
 
-      // Update peak for this bar
+      // Update and draw peaks
       this.peaks[i] = Math.max(height, (this.peaks[i] || 0) * this.peakDecay);
-
-      // Draw peak dot
       if (this.peaks[i] > height) {
-        this.ctx.save();
-        this.ctx.translate(x, y);
-        this.ctx.rotate(angle + Math.PI / 2);
-        this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${
+        barCtx.save();
+        barCtx.translate(x, y);
+        barCtx.rotate(angle + Math.PI / 2);
+        barCtx.fillStyle = `hsla(${hue}, ${saturation}%, ${
           lightness + 20
         }%, 0.9)`;
-        this.ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${
-          lightness + 20
-        }%, 0.5)`;
-        this.ctx.shadowBlur = 4;
-        this.ctx.beginPath();
-        this.ctx.arc(0, this.peaks[i], 2, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.restore();
+        barCtx.beginPath();
+        barCtx.arc(0, this.peaks[i], barRadius, 0, Math.PI * 2);
+        barCtx.fill();
+        barCtx.restore();
       }
     }
 
-    // Rotate the spiral
-    this.hue = (this.hue + deltaTime * 0.02) % 360;
+    // Draw the final result
+    this.ctx.drawImage(barCanvas, 0, 0);
 
-    requestAnimationFrame(() => this.animate());
+    // Update hue
+    this.hue = (this.hue + deltaTime * 0.02) % 360;
   }
 
   drawGrid() {
@@ -225,5 +255,23 @@ export default class SpectrumVisualizerModule extends BaseModule {
 
   stop() {
     this.stopAnimation();
+  }
+
+  toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      this.canvas.requestFullscreen().then(() => {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.classList.add("fullscreen");
+      });
+    } else {
+      // Exit fullscreen
+      document.exitFullscreen().then(() => {
+        this.canvas.width = 240;
+        this.canvas.height = 140;
+        this.canvas.classList.remove("fullscreen");
+      });
+    }
   }
 }

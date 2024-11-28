@@ -1210,10 +1210,54 @@ body {
   }
 
   .spectrum-canvas {
-    margin: 0 10px;
+    // margin: 0 10px;
     border-radius: 8px;
     background: #1a1a1a;
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .spectrum-container {
+    position: relative;
+    margin: 0 10px;
+  }
+
+  .spectrum-fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    opacity: 0.5;
+    z-index: 1000;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.1);
+    }
+  }
+
+  .spectrum-canvas {
+    border-radius: 8px;
+    background: #1a1a1a;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+
+    &.fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0;
+      z-index: 9999;
+    }
   }
 }
 
