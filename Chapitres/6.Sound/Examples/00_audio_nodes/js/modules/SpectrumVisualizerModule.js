@@ -33,9 +33,39 @@ export default class SpectrumVisualizerModule extends BaseModule {
     // Add fullscreen change listener
     document.addEventListener("fullscreenchange", () => {
       if (!document.fullscreenElement) {
+        this.canvas.style.position = "";
+        this.canvas.style.top = "";
+        this.canvas.style.left = "";
+        this.canvas.style.transform = "";
         this.canvas.width = 240;
         this.canvas.height = 140;
         this.canvas.classList.remove("fullscreen");
+
+        // Ensure the canvas stays in the spectrum container
+        const container = this.element.querySelector(".spectrum-container");
+        if (container && this.canvas.parentElement !== container) {
+          container.appendChild(this.canvas);
+        }
+      }
+    });
+
+    // Add resize handler for fullscreen
+    window.addEventListener("resize", () => {
+      if (document.fullscreenElement) {
+        const originalRatio = 240 / 140;
+        const screenRatio = window.innerWidth / window.innerHeight;
+
+        let newWidth, newHeight;
+        if (screenRatio > originalRatio) {
+          newHeight = window.innerHeight;
+          newWidth = newHeight * originalRatio;
+        } else {
+          newWidth = window.innerWidth;
+          newHeight = newWidth / originalRatio;
+        }
+
+        this.canvas.width = newWidth;
+        this.canvas.height = newHeight;
       }
     });
   }
@@ -449,16 +479,47 @@ export default class SpectrumVisualizerModule extends BaseModule {
     if (!document.fullscreenElement) {
       // Enter fullscreen
       this.canvas.requestFullscreen().then(() => {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        // Calculate new dimensions while maintaining aspect ratio
+        const originalRatio = 240 / 140;
+        const screenRatio = window.innerWidth / window.innerHeight;
+
+        let newWidth, newHeight;
+        if (screenRatio > originalRatio) {
+          newHeight = window.innerHeight;
+          newWidth = newHeight * originalRatio;
+        } else {
+          newWidth = window.innerWidth;
+          newHeight = newWidth / originalRatio;
+        }
+
+        // Center the canvas in fullscreen
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "50%";
+        this.canvas.style.left = "50%";
+        this.canvas.style.transform = "translate(-50%, -50%)";
+
+        // Set new dimensions
+        this.canvas.width = newWidth;
+        this.canvas.height = newHeight;
         this.canvas.classList.add("fullscreen");
       });
     } else {
       // Exit fullscreen
       document.exitFullscreen().then(() => {
+        // Reset to original dimensions and positioning
+        this.canvas.style.position = "";
+        this.canvas.style.top = "";
+        this.canvas.style.left = "";
+        this.canvas.style.transform = "";
         this.canvas.width = 240;
         this.canvas.height = 140;
         this.canvas.classList.remove("fullscreen");
+
+        // Ensure the canvas stays in the spectrum container
+        const container = this.element.querySelector(".spectrum-container");
+        if (container && this.canvas.parentElement !== container) {
+          container.appendChild(this.canvas);
+        }
       });
     }
   }
