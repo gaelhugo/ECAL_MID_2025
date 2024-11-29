@@ -10,7 +10,7 @@ export default class CustomVisualizerModule extends BaseModule {
 
     // Create analyzer node
     this.audioNode = this.audioContext.createAnalyser();
-    this.audioNode.fftSize = 256;
+    this.audioNode.fftSize = 512;
     this.bufferLength = this.audioNode.frequencyBinCount;
     // this.dataArray = new Uint8Array(this.bufferLength);
     this.dataFrequency = new Uint8Array(this.bufferLength);
