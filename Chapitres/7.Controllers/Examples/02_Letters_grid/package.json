@@ -1,14 +1,14 @@
 {
-  "name": "01_audio_nodes",
+  "name": "00-midi-setup",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=./ --minify false",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.4.10"
+    "vite": "^6.0.1"
   }
 }
