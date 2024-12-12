@@ -63,7 +63,7 @@ export default class App extends BaseApp {
 
   handleMIDIMessage(message) {
     const [command, controller, value] = message.data;
-
+    console.log(command, controller, value);
     // Gérer l'explosion (touche 32)
     if (controller === 32) {
       if (value === 127) {
@@ -84,17 +84,10 @@ export default class App extends BaseApp {
         this.rows = Math.max(1, Math.floor((value / 127) * 20 + 1));
         this.createGrid();
         break;
-      case 3: // Lettres
-        const newIndex = Math.floor((value / 127) * (this.letters.length - 1));
-        if (newIndex !== this.currentLetterIndex) {
-          this.currentLetterIndex = newIndex;
-          this.updateAllLetters(this.letters[this.currentLetterIndex]);
-        }
-        break;
-      case 4: // Magnification
+      case 3: // Magnification
         this.magnification = value / 127;
         break;
-      case 5: // Amplitude du mouvement
+      case 4: // Amplitude du mouvement
         this.motionAmplitude = value / 127;
         break;
     }
@@ -147,73 +140,59 @@ export default class App extends BaseApp {
     }
   }
 
+  getEffects(baseX, baseY) {
+    const distance = Math.hypot(baseX, baseY);
+    const maxDistance =
+      Math.hypot(this.cols * this.letterSize, this.rows * this.letterSize) / 2;
+    const scale = 1 + (1 - distance / maxDistance) * this.magnification;
+    const angle = Math.atan2(baseY, baseX);
+    const motion =
+      this.magnification *
+      Math.sin(this.time + distance * 0.05) *
+      this.motionAmplitude;
+
+    return {
+      scale,
+      motion: {
+        x: Math.cos(angle) * motion * 20,
+        y: Math.sin(angle) * motion * 20,
+      },
+    };
+  }
+
   draw() {
-    // Fond noir
+    // Clear background
     this.ctx.fillStyle = "#000000";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#ffffff";
 
-    if (this.particles.length > 0) {
-      // Mode particules
-      this.particles.forEach((particle) => {
-        // Recalculate scale based on current magnification
-        const scale =
-          1 +
-          (1 - particle.distance / particle.maxDistance) * this.magnification;
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
 
-        // Calculate motion effect with current parameters
-        const motion =
-          this.magnification *
-          Math.sin(this.time + particle.distance * 0.05) *
-          this.motionAmplitude;
-        const offsetX = Math.cos(particle.angle) * motion * 20;
-        const offsetY = Math.sin(particle.angle) * motion * 20;
+    // Draw grid (either particles or normal)
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        const baseX =
+          col * this.letterSize * 1.5 - (this.cols * this.letterSize * 1.5) / 2;
+        const baseY =
+          row * this.letterSize * 1.5 - (this.rows * this.letterSize * 1.5) / 2;
+        const effects = this.getEffects(baseX, baseY);
 
-        particle.update(
-          this.canvas.width / 2,
-          this.canvas.height / 2,
-          offsetX,
-          offsetY,
-          scale
-        );
-        particle.draw(this.ctx);
-      });
-    } else {
-      // Mode normal
-      const centerX = this.canvas.width / 2;
-      const centerY = this.canvas.height / 2;
-
-      this.ctx.fillStyle = "#ffffff";
-      for (let row = 0; row < this.rows; row++) {
-        for (let col = 0; col < this.cols; col++) {
-          const baseX =
-            col * this.letterSize * 1.5 -
-            (this.cols * this.letterSize * 1.5) / 2;
-          const baseY =
-            row * this.letterSize * 1.5 -
-            (this.rows * this.letterSize * 1.5) / 2;
-
-          const distance = Math.sqrt(baseX * baseX + baseY * baseY);
-          const maxDistance =
-            Math.sqrt(
-              Math.pow(this.cols * this.letterSize, 2) +
-                Math.pow(this.rows * this.letterSize, 2)
-            ) / 2;
-
-          const scale = 1 + (1 - distance / maxDistance) * this.magnification;
-          const angle = Math.atan2(baseY, baseX);
-
-          const motion =
-            this.magnification *
-            Math.sin(this.time + distance * 0.05) *
-            this.motionAmplitude;
-          const offsetX = Math.cos(angle) * motion * 20;
-          const offsetY = Math.sin(angle) * motion * 20;
-
-          const x = centerX + (baseX + offsetX) * scale;
-          const y = centerY + (baseY + offsetY) * scale;
-
-          this.ctx.font = `${this.letterSize * scale}px monospace`;
-          this.ctx.fillText(this.grid[row][col], x, y);
+        if (this.particles.length) {
+          this.particles[row * this.cols + col].update(
+            centerX,
+            centerY,
+            effects.scale,
+            effects.motion
+          );
+          this.particles[row * this.cols + col].draw(this.ctx, effects.scale);
+        } else {
+          this.ctx.font = `${this.letterSize * effects.scale}px monospace`;
+          this.ctx.fillText(
+            this.grid[row][col],
+            centerX + (baseX + effects.motion.x) * effects.scale,
+            centerY + (baseY + effects.motion.y) * effects.scale
+          );
         }
       }
     }

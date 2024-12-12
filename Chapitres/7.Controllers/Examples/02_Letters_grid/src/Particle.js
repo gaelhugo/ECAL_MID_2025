@@ -1,51 +1,41 @@
 export default class Particle {
-  constructor(x, y, letter, size, baseX, baseY, angle, distance, maxDistance) {
+  constructor(x, y, letter, size, baseX, baseY) {
+    // Position and movement
     this.x = x;
     this.y = y;
-    this.letter = letter;
-    this.size = size;
     this.baseX = baseX;
     this.baseY = baseY;
-    this.angle = angle;
-    this.distance = distance;
-    this.maxDistance = maxDistance;
     this.velocity = {
       x: (Math.random() - 0.5) * 20,
       y: (Math.random() - 0.5) * 20,
     };
+
+    // Display
+    this.letter = letter;
+    this.size = size;
     this.isExploding = false;
   }
 
-  update(centerX, centerY, offsetX, offsetY, scale) {
+  update(centerX, centerY, scale, motion) {
     if (this.isExploding) {
-      // Simple explosion movement
       this.x += this.velocity.x;
       this.y += this.velocity.y;
     } else {
-      // Return to original position with all effects
-      const targetX = centerX + (this.baseX + offsetX) * scale;
-      const targetY = centerY + (this.baseY + offsetY) * scale;
-
-      // Smooth interpolation back to target position
-      const easing = 0.1;
-      this.x += (targetX - this.x) * easing;
-      this.y += (targetY - this.y) * easing;
+      const targetX = centerX + (this.baseX + motion.x) * scale;
+      const targetY = centerY + (this.baseY + motion.y) * scale;
+      this.x += (targetX - this.x) * 0.1;
+      this.y += (targetY - this.y) * 0.1;
     }
-
-    // Always apply scale for consistent size
-    this.currentScale = scale;
   }
 
-  draw(ctx) {
-    ctx.font = `${this.size * this.currentScale}px monospace`;
-    ctx.fillStyle = "#ffffff";
+  draw(ctx, scale) {
+    ctx.font = `${this.size * scale}px monospace`;
     ctx.fillText(this.letter, this.x, this.y);
   }
 
   explode() {
     this.isExploding = true;
   }
-
   reset() {
     this.isExploding = false;
   }
