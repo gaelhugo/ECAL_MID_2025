@@ -9,6 +9,8 @@ export default class App extends BaseApp {
   }
 
   init() {
+    console.log("🚀 - App initialized");
+
     // Créer un cercle au centre du canvas
     this.circle = new Circle(
       this.ctx,
@@ -44,15 +46,16 @@ export default class App extends BaseApp {
   // La "controller" est le numéro du potentiomètre/slider
   // La "value" est la valeur du potentiomètre/slider (0-127)
   handleMIDIMessage(message) {
+    console.log(message);
     const [command, controller, value] = message.data;
-    console.log("🎹", command, controller, value);
+    if (command != 248) console.log("🎹", command, controller, value);
     // Associer le potentiomètre 1 à la position X et le potentiomètre 2 à la position Y
     switch (controller) {
-      case 1: // Position X
+      case 0: // Position X
         const x = (value / 127) * this.canvas.width;
         this.circle.setPosition(x, this.circle.y);
         break;
-      case 2: // Position Y
+      case 1: // Position Y
         const y = (value / 127) * this.canvas.height;
         this.circle.setPosition(this.circle.x, y);
         break;
