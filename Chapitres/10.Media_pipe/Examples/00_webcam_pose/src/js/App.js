@@ -2,32 +2,41 @@ import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { HAND_CONNECTIONS } from "@mediapipe/hands";
 import { LetterPlacer } from "./LetterPlacer";
+import { SpeechListener } from "./SpeechListener";
+import BaseApp from "./BaseApp";
 
-export default class App {
+export default class App extends BaseApp {
   /**
-   * Constructeur de l'application
-   * Initialise les éléments et démarre l'application
+   * Constructeur de l'application qui initialise les éléments et démarre l'application
    */
   constructor() {
+    super();
     this.setupElements();
+    this.setupSpeechRecognition();
     this.init();
   }
 
   /**
-   * Configure les éléments de base:
-   * - Crée et configure le canvas pour le dessin
+   * Configure les éléments de base de l'application:
    * - Crée et configure la vidéo pour la webcam
    */
   setupElements() {
-    this.canvas = document.createElement("canvas");
-    this.ctx = this.canvas.getContext("2d");
-    document.body.appendChild(this.canvas);
-
     this.video = document.createElement("video");
     this.video.autoplay = true;
     document.body.appendChild(this.video);
 
     // this.handAnalyzer = new HandAnalyzer(this.ctx);
+  }
+
+  /**
+   * Configure et démarre la reconnaissance vocale
+   */
+  setupSpeechRecognition() {
+    // Crée l'écouteur de parole
+    this.speechListener = new SpeechListener(null);
+
+    // Démarre l'écoute
+    this.speechListener.start();
   }
 
   /**
@@ -82,7 +91,7 @@ export default class App {
   }
 
   /**
-   * Détecte les mains dans la frame courante et dessine les résultats
+   * Analyse la frame vidéo courante pour détecter les mains et créer les mots correspondantes
    */
   detect() {
     const results = this.handLandmarker.detectForVideo(
@@ -95,17 +104,17 @@ export default class App {
     if (results.landmarks) {
       this.allLetters = [];
       results.landmarks.forEach((landmarks) => {
-        // drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
-        //   color: "#00FF00",
-        //   lineWidth: 3,
-        // });
-        // drawLandmarks(this.ctx, landmarks, {
-        //   color: "#FF0000",
-        //   lineWidth: 1,
-        // });
+        drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
+          color: "#00FF00",
+          lineWidth: 3,
+        });
+        drawLandmarks(this.ctx, landmarks, {
+          color: "#FF0000",
+          lineWidth: 1,
+        });
 
         // this.handAnalyzer.analyzePinchDistance(landmarks);
-        const letter = new LetterPlacer(this.ctx);
+        const letter = new LetterPlacer(this.ctx, this.speechListener);
         letter.analyzePinchDistance(landmarks);
         this.allLetters.push(letter);
       });
@@ -113,11 +122,7 @@ export default class App {
   }
 
   /**
-   * Démarre la détection des mains en continu:
-   * - Vérifie si une nouvelle frame est disponible
-   * - Détecte les mains avec MediaPipe
-   * - Dessine les points et connexions des mains détectées
-   * - Continue la détection avec requestAnimationFrame
+   * Lance la boucle d'animation qui détecte et affiche les mains en continu
    */
   draw() {
     this.detect();

@@ -3,8 +3,9 @@ export class LetterPlacer {
    * Crée un placeur de lettres qui affiche une lettre entre deux points
    * @param {CanvasRenderingContext2D} ctx - Le contexte de dessin du canvas
    */
-  constructor(ctx) {
+  constructor(ctx, speechListener) {
     this.ctx = ctx;
+    this.speechListener = speechListener;
     this.letter = "Gael"; // La lettre à afficher
     this.font = "Arial"; // Police d'écriture
     this.minFontSize = 10; // Taille minimum de la police en pixels
@@ -96,7 +97,7 @@ export class LetterPlacer {
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillText(this.letter, 0, distance / 10);
+    this.ctx.fillText(this.speechListener.SPOKEN_WORDS, 0, distance / 10);
 
     // Restaure le contexte
     this.ctx.restore();
@@ -119,7 +120,10 @@ export class LetterPlacer {
     return Math.max(this.minFontSize, Math.min(finalSize, this.maxFontSize));
   }
 
-  set word(word) {
-    this.letter = word;
+  updateVariableFont() {
+    // KyivTypeSerif-VarGX.woff2
+    // paramètre : wght 0 -1000
+    // paramètre : CONT 0 -1000
+    // paramètre : MIDL 0 -1000
   }
 }
