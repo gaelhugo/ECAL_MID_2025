@@ -1,6 +1,7 @@
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { HAND_CONNECTIONS } from "@mediapipe/hands";
+import { LetterPlacer } from "./LetterPlacer";
 
 export default class App {
   /**
@@ -25,6 +26,8 @@ export default class App {
     this.video = document.createElement("video");
     this.video.autoplay = true;
     document.body.appendChild(this.video);
+
+    // this.handAnalyzer = new HandAnalyzer(this.ctx);
   }
 
   /**
@@ -90,15 +93,21 @@ export default class App {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (results.landmarks) {
+      this.allLetters = [];
       results.landmarks.forEach((landmarks) => {
-        drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
-          color: "#00FF00",
-          lineWidth: 3,
-        });
-        drawLandmarks(this.ctx, landmarks, {
-          color: "#FF0000",
-          lineWidth: 1,
-        });
+        // drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
+        //   color: "#00FF00",
+        //   lineWidth: 3,
+        // });
+        // drawLandmarks(this.ctx, landmarks, {
+        //   color: "#FF0000",
+        //   lineWidth: 1,
+        // });
+
+        // this.handAnalyzer.analyzePinchDistance(landmarks);
+        const letter = new LetterPlacer(this.ctx);
+        letter.analyzePinchDistance(landmarks);
+        this.allLetters.push(letter);
       });
     }
   }
