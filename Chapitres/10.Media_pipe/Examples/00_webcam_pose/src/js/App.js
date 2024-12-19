@@ -3,138 +3,115 @@ import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { HAND_CONNECTIONS } from "@mediapipe/hands";
 
 export default class App {
+  /**
+   * Constructeur de l'application
+   * Initialise les éléments et démarre l'application
+   */
   constructor() {
-    console.log("constructor");
+    this.setupElements();
     this.init();
   }
 
-  async init() {
-    console.log("init");
-    // 1. Créer les éléments de base
-    this.setupDOMElements();
-
-    // 2. Initialiser le détecteur de mains
-    await this.setupHandLandmarker();
-
-    // 3. Démarrer la webcam
-    await this.startWebcam();
-  }
-
-  setupDOMElements() {
-    // Créer et configurer le canvas
+  /**
+   * Configure les éléments de base:
+   * - Crée et configure le canvas pour le dessin
+   * - Crée et configure la vidéo pour la webcam
+   */
+  setupElements() {
     this.canvas = document.createElement("canvas");
-    document.body.appendChild(this.canvas);
     this.ctx = this.canvas.getContext("2d");
+    document.body.appendChild(this.canvas);
 
-    // Créer et configurer l'élément vidéo
     this.video = document.createElement("video");
     this.video.autoplay = true;
     document.body.appendChild(this.video);
   }
 
-  async setupHandLandmarker() {
-    // Charger les fichiers nécessaires pour la vision par ordinateur
-    const vision = await FilesetResolver.forVisionTasks(
-      "node_modules/@mediapipe/tasks-vision/wasm"
-    );
+  /**
+   * Initialise l'application:
+   * - Configure la détection des mains avec MediaPipe
+   * - Démarre la webcam
+   * - Configure les dimensions du canvas quand la vidéo est prête
+   */
+  async init() {
+    // Imagine que tu prépares une boîte à outils magique pour reconnaître les mains.
+    // Cette ligne c'est comme déballer et installer tous les outils dont on a besoin:
+    // - Elle télécharge un "cerveau artificiel" (appelé WASM en langage technique)
+    // - Elle prépare le navigateur à utiliser ce cerveau (comme brancher une machine)
+    // - Elle installe tous les assistants nécessaires (comme TensorFlow, un outil d'intelligence artificielle)
+    const vision = await FilesetResolver.forVisionTasks("./wasm");
 
-    // Créer le détecteur de mains avec les options
+    // Maintenant, on crée notre "détecteur de mains" (HandLandmarker en anglais).
+    // C'est comme un artiste qui sait dessiner des points sur les mains:
+    // - Il utilise un "modèle" (comme un guide de dessin) pour reconnaître les mains
+    // - Il travaille en deux étapes:
+    //   1. Il repère les mains dans l'image (comme trouver une forme dans un dessin)
+    //   2. Il place des points spéciaux sur chaque main (comme relier les points d'un dessin)
     this.handLandmarker = await HandLandmarker.createFromOptions(vision, {
       baseOptions: {
-        modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-        delegate: "GPU",
+        modelAssetPath: `./hand_landmarker.task`, // Notre "guide de dessin" (6 Mo de données)
+        delegate: "GPU", // On utilise la carte graphique (comme un assistant rapide)
       },
+      // Le mode VIDEO, c'est comme avoir une mémoire:
+      // - Il se rappelle où étaient les mains avant
+      // - Il peut les suivre même quand elles bougent vite
+      // (comme suivre une balle qui rebondit)
       runningMode: "VIDEO",
+      // On lui dit de chercher maximum 2 mains en même temps
+      // (comme un jongleur qui ne peut suivre que 2 balles)
       numHands: 2,
+    });
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: 1920, height: 1080 },
+    });
+    this.video.srcObject = stream;
+
+    this.video.addEventListener("loadeddata", () => {
+      const { videoWidth, videoHeight } = this.video;
+      [this.canvas, this.video].forEach((el) => {
+        el.width = el.style.width = videoWidth;
+        el.height = el.style.height = videoHeight;
+      });
+
+      this.draw();
     });
   }
 
-  async startWebcam() {
-    // Vérifier si la webcam est supportée
-    if (!navigator.mediaDevices?.getUserMedia) {
-      console.warn("getUserMedia() n'est pas supporté par votre navigateur");
-      return;
-    }
+  /**
+   * Détecte les mains dans la frame courante et dessine les résultats
+   */
+  detect() {
+    const results = this.handLandmarker.detectForVideo(
+      this.video,
+      performance.now()
+    );
 
-    try {
-      // Accéder à la webcam avec la plus haute résolution possible
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    if (results.landmarks) {
+      results.landmarks.forEach((landmarks) => {
+        drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
+          color: "#00FF00",
+          lineWidth: 3,
+        });
+        drawLandmarks(this.ctx, landmarks, {
+          color: "#FF0000",
+          lineWidth: 1,
+        });
       });
-
-      // Connecter le flux à l'élément vidéo
-      this.video.srcObject = stream;
-
-      // Attendre que la vidéo soit chargée
-      this.video.addEventListener("loadeddata", () => {
-        // Configurer les dimensions pour correspondre à la vidéo
-        const updateDimensions = () => {
-          // Utiliser les dimensions réelles de la vidéo
-          const videoWidth = this.video.videoWidth;
-          const videoHeight = this.video.videoHeight;
-
-          // Appliquer les mêmes dimensions au canvas
-          this.canvas.width = videoWidth;
-          this.canvas.height = videoHeight;
-
-          // Appliquer les dimensions via CSS pour maintenir le ratio
-          this.canvas.style.width = `${videoWidth}px`;
-          this.canvas.style.height = `${videoHeight}px`;
-          this.video.style.width = `${videoWidth}px`;
-          this.video.style.height = `${videoHeight}px`;
-        };
-
-        // Mettre à jour les dimensions initialement
-        updateDimensions();
-
-        // Démarrer la détection
-        this.startDetection();
-      });
-    } catch (error) {
-      console.error("Erreur d'accès à la webcam:", error);
     }
   }
 
-  startDetection() {
-    let lastVideoTime = -1;
-
-    const detectFrame = async () => {
-      // Ne détecter que si la frame a changé
-      if (lastVideoTime !== this.video.currentTime) {
-        lastVideoTime = this.video.currentTime;
-
-        // Détecter les mains
-        const results = this.handLandmarker.detectForVideo(
-          this.video,
-          performance.now()
-        );
-
-        // Effacer le canvas
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Dessiner les résultats
-        if (results.landmarks) {
-          for (const landmarks of results.landmarks) {
-            drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
-              color: "#00FF00",
-              lineWidth: 3,
-            });
-            drawLandmarks(this.ctx, landmarks, {
-              color: "#FF0000",
-              lineWidth: 1,
-            });
-          }
-        }
-      }
-
-      // Continuer la boucle
-      requestAnimationFrame(detectFrame);
-    };
-
-    // Démarrer la boucle de détection
-    detectFrame();
+  /**
+   * Démarre la détection des mains en continu:
+   * - Vérifie si une nouvelle frame est disponible
+   * - Détecte les mains avec MediaPipe
+   * - Dessine les points et connexions des mains détectées
+   * - Continue la détection avec requestAnimationFrame
+   */
+  draw() {
+    this.detect();
+    requestAnimationFrame(this.draw.bind(this));
   }
 }
