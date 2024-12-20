@@ -101,12 +101,13 @@ npm create vite@latest
 
 ## Chapitres
 
-1. [Classes et Objets](Chapitres/1.Class_and_object/README.md)
-2. [Mouvement et easing](Chapitres/2.Motion_and_easing/README.md)
-3. [Trigonométrie](Chapitres/3.Trigonometry/README.md)
-4. [Systèmes de particules](Chapitres/4.Particle_systems/README.md)
-5. [Analyse de pixels et Raster](Chapitres/5.Pixels_and_raster/README.md)
-6. [Son](Chapitres/6.Sound/README.md)
-7. [Contrôleurs externes](Chapitres/7.Controllers/README.md)
-8. [3D](Chapitres/8.3D/README.md)
-9. [Dom et SVG manipulation](Chapitres/9.DOM_and_SVG/README.md)
+1. [Classes et Objets](Chapitres/01.Class_and_object/README.md)
+2. [Mouvement et easing](Chapitres/02.Motion_and_easing/README.md)
+3. [Trigonométrie](Chapitres/03.Trigonometry/README.md)
+4. [Systèmes de particules](Chapitres/04.Particle_systems/README.md)
+5. [Analyse de pixels et Raster](Chapitres/05.Pixels_and_raster/README.md)
+6. [Son](Chapitres/06.Sound/README.md)
+7. [Contrôleurs externes](Chapitres/07.Controllers/README.md)
+8. [3D](Chapitres/08.3D/README.md)
+9. [Dom et SVG manipulation](Chapitres/09.DOM_and_SVG/README.md)
+10. [Mediapipe](Chapitres/10.Media_pipe/README.md)
