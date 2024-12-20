@@ -24,8 +24,6 @@ export default class App extends BaseApp {
     this.video = document.createElement("video");
     this.video.autoplay = true;
     document.body.appendChild(this.video);
-
-    // this.handAnalyzer = new HandAnalyzer(this.ctx);
   }
 
   /**
@@ -46,7 +44,7 @@ export default class App extends BaseApp {
    * - Configure les dimensions du canvas quand la vidéo est prête
    */
   async init() {
-    // Imagine que tu prépares une boîte à outils magique pour reconnaître les mains.
+    // Imagine que tu prépares une boîte à outils pour reconnaître les mains.
     // Cette ligne c'est comme déballer et installer tous les outils dont on a besoin:
     // - Elle télécharge un "cerveau artificiel" (appelé WASM en langage technique)
     // - Elle prépare le navigateur à utiliser ce cerveau (comme brancher une machine)
@@ -80,12 +78,10 @@ export default class App extends BaseApp {
     this.video.srcObject = stream;
 
     this.video.addEventListener("loadeddata", () => {
-      const { videoWidth, videoHeight } = this.video;
       [this.canvas, this.video].forEach((el) => {
-        el.width = el.style.width = videoWidth;
-        el.height = el.style.height = videoHeight;
+        el.width = el.style.width = 1920;
+        el.height = el.style.height = 1080;
       });
-
       this.draw();
     });
   }
@@ -112,14 +108,14 @@ export default class App extends BaseApp {
         );
       }
       results.landmarks.forEach((landmarks, index) => {
-        // drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
-        //   color: "#00FF00",
-        //   lineWidth: 3,
-        // });
-        // drawLandmarks(this.ctx, landmarks, {
-        //   color: "#FF0000",
-        //   lineWidth: 1,
-        // });
+        drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
+          color: "#00FF00",
+          lineWidth: 3,
+        });
+        drawLandmarks(this.ctx, landmarks, {
+          color: "#FF0000",
+          lineWidth: 1,
+        });
 
         // this.handAnalyzer.analyzePinchDistance(landmarks);
         // const letter = new LetterPlacer(this.ctx, this.speechListener);
