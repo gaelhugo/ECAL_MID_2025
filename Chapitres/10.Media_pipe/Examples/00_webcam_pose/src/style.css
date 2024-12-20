@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "KyivTypeTitling-VarGX";
+  src: url("./font/KyivTypeTitling-VarGX.woff2") format("woff2-variations");
+}
+
 html,
 body {
   width: 100%;

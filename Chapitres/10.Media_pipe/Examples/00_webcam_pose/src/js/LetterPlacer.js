@@ -3,16 +3,15 @@ export class LetterPlacer {
    * Crée un placeur de lettres qui affiche une lettre entre deux points
    * @param {CanvasRenderingContext2D} ctx - Le contexte de dessin du canvas
    */
-  constructor(ctx, speechListener) {
+  constructor(ctx) {
     this.ctx = ctx;
-    this.speechListener = speechListener;
-    this.letter = "Gael"; // La lettre à afficher
+    this.letter = "A"; // La lettre à afficher
     this.font = "Arial"; // Police d'écriture
     this.minFontSize = 10; // Taille minimum de la police en pixels
     this.maxFontSize = 1000; // Taille maximum de la police en pixels
 
     // Paramètres pour le lissage du mouvement
-    this.smoothingFactor = 0.5; // Entre 0 et 1, plus c'est haut plus c'est lisse
+    this.smoothingFactor = 0.6; // Entre 0 et 1, plus c'est haut plus c'est lisse
     this.smoothedPoints = {
       thumb: null, // Position lissée du pouce
       index: null, // Position lissée de l'index
@@ -22,7 +21,7 @@ export class LetterPlacer {
   /**
    * Lisse la position d'un point pour éviter les mouvements brusques
    * @param {Object} newPoint - Nouvelle position du point {x, y, z}
-   * @param {Object} lastPoint - Dernière position lissée du point
+   * @param {Object} lastPoint - Dernière position lissée du pointxwxw
    * @returns {Object} Position lissée
    */
   smoothPoint(newPoint, lastPoint) {
@@ -80,7 +79,7 @@ export class LetterPlacer {
     const centerY = (thumbY + indexY) / 2;
 
     // Calcule l'angle de rotation pour la lettre
-    const angle = Math.atan2(indexY - thumbY, indexX - thumbX) + Math.PI; /// 2;
+    const angle = Math.atan2(indexY - thumbY, indexX - thumbX) + Math.PI / 2;
 
     // Calcule la distance entre les doigts
     const distance = Math.hypot(indexX - thumbX, indexY - thumbY);
@@ -97,7 +96,7 @@ export class LetterPlacer {
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillText(this.speechListener.SPOKEN_WORDS, 0, distance / 10);
+    this.ctx.fillText(this.letter, 0, distance / 10);
 
     // Restaure le contexte
     this.ctx.restore();
@@ -118,12 +117,5 @@ export class LetterPlacer {
 
     // Limite la taille entre min et max
     return Math.max(this.minFontSize, Math.min(finalSize, this.maxFontSize));
-  }
-
-  updateVariableFont() {
-    // KyivTypeSerif-VarGX.woff2
-    // paramètre : wght 0 -1000
-    // paramètre : CONT 0 -1000
-    // paramètre : MIDL 0 -1000
   }
 }

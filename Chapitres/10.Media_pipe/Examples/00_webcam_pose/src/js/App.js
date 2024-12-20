@@ -2,7 +2,6 @@ import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { HAND_CONNECTIONS } from "@mediapipe/hands";
 import { LetterPlacer } from "./LetterPlacer";
-import { SpeechListener } from "./SpeechListener";
 import BaseApp from "./BaseApp";
 
 export default class App extends BaseApp {
@@ -12,7 +11,6 @@ export default class App extends BaseApp {
   constructor() {
     super();
     this.setupElements();
-    this.setupSpeechRecognition();
     this.init();
   }
 
@@ -26,17 +24,6 @@ export default class App extends BaseApp {
     document.body.appendChild(this.video);
 
     // this.handAnalyzer = new HandAnalyzer(this.ctx);
-  }
-
-  /**
-   * Configure et démarre la reconnaissance vocale
-   */
-  setupSpeechRecognition() {
-    // Crée l'écouteur de parole
-    this.speechListener = new SpeechListener(null);
-
-    // Démarre l'écoute
-    this.speechListener.start();
   }
 
   /**
@@ -102,8 +89,17 @@ export default class App extends BaseApp {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (results.landmarks) {
-      this.allLetters = [];
-      results.landmarks.forEach((landmarks) => {
+      // Initialise le tableau de letterPlacers si nécessaire
+      if (
+        !this.letterPlacers ||
+        this.letterPlacers.length !== results.landmarks.length
+      ) {
+        this.letterPlacers = results.landmarks.map(
+          () => new LetterPlacer(this.ctx)
+        );
+      }
+
+      results.landmarks.forEach((landmarks, index) => {
         drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
           color: "#00FF00",
           lineWidth: 3,
@@ -113,10 +109,8 @@ export default class App extends BaseApp {
           lineWidth: 1,
         });
 
-        // this.handAnalyzer.analyzePinchDistance(landmarks);
-        const letter = new LetterPlacer(this.ctx, this.speechListener);
-        letter.analyzePinchDistance(landmarks);
-        this.allLetters.push(letter);
+        // Utilise le letterPlacer existant pour cette main
+        this.letterPlacers[index].analyzePinchDistance(landmarks);
       });
     }
   }
